@@ -77,6 +77,7 @@ jobs:
             PROVIDER_STAGE: "test"
             DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
             JWT_SECRET: "secret"
+            REGION: "something"
             httpPort: 4000
             lambdaPort: 4002
   deploy:
