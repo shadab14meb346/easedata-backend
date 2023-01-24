@@ -6,7 +6,7 @@ provider:
   name: aws
   runtime: nodejs14.x
   stage: ${env:PROVIDER_STAGE}
-  region: us-east-1
+  region: ${env:REGION}
   environment:
     JWT_SECRET: ${env:JWT_SECRET}
     DATABASE_URL: ${env:DATABASE_URL}
