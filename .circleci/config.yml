@@ -77,11 +77,6 @@ jobs:
             PROVIDER_STAGE: "test"
             DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
             JWT_SECRET: "secret"
-            REACT_APP_GRAPHQL_ENDPOINT: "http://localhost:4000/test/graphql"
-            STRIPE_SECRET_KEY: "sk_test_51Kxo9lBdIq1U57G2yhiZ3ET8nzFvL6qvLQswkWjZWybuQKbmaNgYeMHU3REa7U0ppjfHBbid7ZUtJ9cFjahbXfYf00ElRqvzJf"
-            STRIPE_WEBHOOK_SECRET: "just a dummy value"
-            STRIPE_SUCCESS_URL: "http://localhost:3000/success"
-            STRIPE_CANCEL_URL: "http://localhost:3000/cancel"
             httpPort: 4000
             lambdaPort: 4002
   deploy:
