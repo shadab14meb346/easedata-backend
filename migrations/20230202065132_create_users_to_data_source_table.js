@@ -7,7 +7,7 @@ exports.up = function (knex) {
   return knex.schema.createTable("users_to_data_source", function (table) {
     table.increments("id").primary().unsigned();
     table.integer("user_id").notNullable();
-    table.string("data_source_id", 255).defaultTo("");
+    table.integer("data_source_id", 255).notNullable();
     table.primary(["user_id", "data_source_id"]);
   });
 };
