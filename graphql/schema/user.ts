@@ -4,6 +4,7 @@ const userTypeDef = gql`
   type Query {
     getAllUsers: [User!]!
     getMe: User!
+    getMyDataSourcesList: [DataSource!]
   }
 
   type Mutation {

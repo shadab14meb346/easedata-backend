@@ -95,6 +95,7 @@ The AWS Lambada then references that code.
 ## Coding Practices
 
 - For all db operations make a file with the same name as the table and do all of the operations in it. All those files currently are in `core` folder
+- All of the table names should be singular. Just because "user" keyword is reserved in PostGres I have named our one table "users" to avoid any confusion with the served keyword. Make sure to name all other tables singular
 - All of the data validation, authentication and autherization login should be in the graphql resolver.
 - All of the data stored in the DB will be in snake case
 - All requests and responses data to client will be in the snake case.

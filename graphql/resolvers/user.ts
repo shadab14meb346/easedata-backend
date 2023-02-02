@@ -1,4 +1,5 @@
 import * as UserController from "../../controllers/user";
+import { DataSource } from "../../model/data-source";
 
 export const UserResolver = {
   Query: {
@@ -10,6 +11,10 @@ export const UserResolver = {
     getMe: async (_parent, _args, ctx, _info) => {
       const user = ctx.assertAuthenticated();
       return await UserController.getUserById(user.id);
+    },
+    getMyDataSourcesList: async (_parent, _args, ctx, _info) => {
+      const user = ctx.assertAuthenticated();
+      return await DataSource.getAllForAUser(user.id);
     },
   },
   Mutation: {

@@ -42,3 +42,10 @@ functions:
           path: playground
           method: get
           cors: true
+  oauth-callback:
+    handler: ./rest-apis-handlers/oauth-callback.handler
+    events:
+      - http:
+          path: oauth-callback
+          method: get
+          cors: true
