@@ -4,6 +4,7 @@
  */
 
 exports.up = function (knex) {
+  //NOTE:As user keyword is reserved in case of postgres so using users as the  table name here but it's just an exception for this table rest of the tables names will be singular
   return knex.schema.createTable("users", function (table) {
     table.increments("id").primary().unsigned();
     table.string("email", 255).defaultTo("");
@@ -18,9 +19,6 @@ exports.up = function (knex) {
     table.string("confirmation_token", 250);
     table.timestamp("confirmed_at", { useTz: false });
     table.timestamp("confirmation_sent_at", { useTz: false });
-    table.boolean("tcb_flag");
-    table.jsonb("shipping_address");
-    table.jsonb("billing_address");
     table.index(["confirmation_token"], "index_users_on_confirmation_token");
     table.index(["email"], "index_users_on_email");
     table.index(
