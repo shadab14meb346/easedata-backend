@@ -28,7 +28,7 @@ export async function create(opts: CreateOpts) {
 export async function getAllForAUser(userId) {
   try {
     const results = await PostGrace.DB()
-      .select("ds.id", "ds.type", "ds.access_token", "ds.refresh_token")
+      .select("ds.*")
       .from("data_source as ds")
       .innerJoin(
         "users_to_data_source",
@@ -37,7 +37,15 @@ export async function getAllForAUser(userId) {
         "users_to_data_source.data_source_id"
       )
       .where({ user_id: userId });
-    return results;
+    const resultsWithDatesConvertedToString = results.map((result) => {
+      return {
+        ...result,
+        created_at: String(result.created_at),
+        updated_at: String(result.updated_at),
+      };
+    });
+    // console.log(resultsWithDatesConvertedToString);
+    return resultsWithDatesConvertedToString;
   } catch (error) {
     throw new ApolloError("Couldn't find user", "DBError");
   }

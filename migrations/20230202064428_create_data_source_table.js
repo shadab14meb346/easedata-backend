@@ -9,6 +9,7 @@ exports.up = function (knex) {
     table.string("type", 255).notNullable();
     table.string("access_token", 255).defaultTo("");
     table.string("refresh_token", 255).defaultTo("");
+    table.timestamps(true, true); //Add created_at and also updated_at
     table.index(["type"], "index_type_on_data_source");
   });
 };

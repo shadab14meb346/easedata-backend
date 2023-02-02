@@ -8,6 +8,7 @@ exports.up = function (knex) {
     table.increments("id").primary().unsigned();
     table.integer("user_id").notNullable();
     table.integer("data_source_id", 255).notNullable();
+    table.timestamps(true, true); //Add created_at and also updated_at
     table.primary(["user_id", "data_source_id"]);
   });
 };
