@@ -16,6 +16,7 @@ export async function handler(event, context, callback) {
     redirect_uri: process.env.HUB_SPOT_REDIRECT_URI,
     code,
   };
+  console.log(JSON.stringify({ code, state, user, hubSpotOptions }));
   const getTokensResponse = await hubspotClient.oauth.tokensApi.createToken(
     hubSpotOptions.grant_type,
     hubSpotOptions.code as string,
