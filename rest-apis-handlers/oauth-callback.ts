@@ -9,9 +9,6 @@ export async function handler(event, context, callback) {
   const code = event.queryStringParameters.code;
   const state = JSON.parse(event.queryStringParameters.state);
   const user = verifyToken(state.token);
-  // for (const [key, value] of Object.entries(process.env)) {
-  //   console.log(`${key}: ${value}`);
-  // }
   const hubSpotOptions = {
     grant_type: "authorization_code",
     client_id: process.env.HUB_SPOT_CLIENT_ID,
@@ -19,13 +16,6 @@ export async function handler(event, context, callback) {
     redirect_uri: process.env.HUB_SPOT_REDIRECT_URI,
     code,
   };
-  console.log(
-    JSON.stringify({
-      code,
-      user,
-      hubSpotOptions,
-    })
-  );
   const getTokensResponse = await hubspotClient.oauth.tokensApi.createToken(
     hubSpotOptions.grant_type,
     hubSpotOptions.code as string,
