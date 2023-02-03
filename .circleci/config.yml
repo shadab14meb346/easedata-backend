@@ -80,6 +80,10 @@ jobs:
             REGION: "something"
             httpPort: 4000
             lambdaPort: 4002
+            REDIRECT_TO_DASHBOARD: " "
+            HUB_SPOT_CLIENT_ID: " "
+            HUB_SPOT_CLIENT_SECRET: " "
+            HUB_SPOT_REDIRECT_URI: " "
   deploy:
     docker: # use the docker executor type
       - image: node:14.19 # the primary container, where your job's commands are run
