@@ -44,11 +44,26 @@ export async function getAllForAUser(userId) {
         updated_at: String(result.updated_at),
       };
     });
-    // console.log(resultsWithDatesConvertedToString);
     return resultsWithDatesConvertedToString;
   } catch (error) {
     throw new ApolloError("Couldn't find user", "DBError");
   }
+}
+
+export async function getMostRecentDataSource(userId) {
+  const results = await PostGrace.DB()
+    .select("ds.*")
+    .from("data_source as ds")
+    .innerJoin(
+      "users_to_data_source",
+      "ds.id",
+      "=",
+      "users_to_data_source.data_source_id"
+    )
+    .where({ user_id: userId })
+    .orderBy("created_at", "desc")
+    .limit(1);
+  return results[0];
 }
 
 export * as DataSource from "./data-source";
