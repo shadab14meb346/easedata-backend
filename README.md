@@ -92,6 +92,11 @@ AWS cloudformation deploy the required stacks.
 OAll of the code is stored in s3.
 The AWS Lambada then references that code.
 
+## When introducing new environment variables
+
+- Make sure to add all the environment variables in the circle ci dashboard.
+- Also add all of the environment variables in the `serverless.yml` file under the provider environment section.
+
 ## Coding Practices
 
 - For all db operations make a file with the same name as the table and do all of the operations in it. All those files currently are in `core` folder
