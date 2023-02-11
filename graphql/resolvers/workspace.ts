@@ -10,6 +10,10 @@ export const WorkspaceResolver = {
       };
       return workspace;
     },
+    getMyWorkspaces: async (_parent, _args, ctx, _info) => {
+      const user = ctx.assertAuthenticated();
+      return await WorkspaceController.getWorkspacesForAUser(user.id);
+    },
   },
   Mutation: {
     createWorkspace: async (_parent, _args, ctx, _info) => {
