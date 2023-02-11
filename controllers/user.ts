@@ -2,6 +2,7 @@ import { ApolloError, UserInputError } from "apollo-server-lambda";
 import { compareHash } from "../common/bcrypt";
 import { getJWT } from "../common/jwt";
 import { User } from "../model/user";
+import { Workspace } from "../model/workspace";
 import { registerInputValidator } from "../utils/validators";
 
 const validateRegisterInput = (input: User.CreateOpts) => {
@@ -46,6 +47,10 @@ export const register = async (input) => {
     admin: false,
   };
   const jwt = getJWT(userDataForJWT);
+  await Workspace.create({
+    name: "Default Workspace",
+    owner_user_id: insertedRowId,
+  });
   return {
     user: userDataForJWT,
     token: jwt,
