@@ -5,8 +5,15 @@ const workspaceTypeDef = gql`
     getWorkspace(id: ID!): Workspace!
   }
 
+  type Mutation {
+    createWorkspace(input: CreateWorkspaceInput!): Workspace!
+  }
+
   type Workspace {
     id: ID!
+    name: String!
+  }
+  input CreateWorkspaceInput {
     name: String!
   }
 `;
