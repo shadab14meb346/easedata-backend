@@ -27,27 +27,39 @@ const getWorkspaceRole = async ({ userId, workspace }) => {
 };
 export const createWorkspace = async (input: Workspace.CreateOpts) => {
   validateCreateWorkspaceInput(input);
-  return await Workspace.create(input);
+  const createWorkspace = await Workspace.create(input);
+  return { ...createWorkspace, role: WorkspaceRoles.OWNER };
 };
 
 export const getWorkspacesForAUser = async (userId: string) => {
   //TODO: get all workspace a user is member of
   //TODO: get all workspaces a user is admin of
   //TODO: now merge all workspaces and return
-  const getWorkspacesThatUserIsOwnerOf = async () => {
-    return Workspace.getOwnedWorkspacesForAUser(userId);
-  };
-  const [ownerWorkspaces] = await Promise.all([
-    getWorkspacesThatUserIsOwnerOf(),
+  const [ownedWorkspaces, nonOwnedWorkspacesOfUser] = await Promise.all([
+    Workspace.getOwnedWorkspacesForAUser(userId),
+    Workspace.getNonOwnedWorkspacesForAUser(userId),
   ]);
-  const ownedWorkspacesWithRole = ownerWorkspaces.map((workspace) => {
+  const ownedWorkspacesWithRole = ownedWorkspaces.map((workspace) => {
     const workspaceObjWithRole = {
       ...workspace,
       role: WorkspaceRoles.OWNER,
     };
     return workspaceObjWithRole;
   });
-  return ownedWorkspacesWithRole;
+  const nonOwnedWorkspaceWithJustRequiredFields = nonOwnedWorkspacesOfUser.map(
+    (workspace) => {
+      const obj = {
+        id: workspace.id,
+        name: workspace.name,
+        role: workspace.role,
+      };
+      return obj;
+    }
+  );
+  return [
+    ...ownedWorkspacesWithRole,
+    ...nonOwnedWorkspaceWithJustRequiredFields,
+  ];
 };
 
 export const getWorkspace = async ({ workspaceId, user }) => {

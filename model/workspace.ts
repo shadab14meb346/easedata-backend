@@ -73,5 +73,23 @@ export async function findWorkspaceUser({ workspaceId, userId }) {
     throw new ApolloError("Couldn't find workspace user", "DBError");
   }
 }
+export async function getNonOwnedWorkspacesForAUser(userId) {
+  try {
+    const results = await PostGrace.DB()
+      .select("ws.*", "workspace_to_users.role")
+      .from("workspace as ws")
+      .innerJoin(
+        "workspace_to_users",
+        "ws.id",
+        "=",
+        "workspace_to_users.workspace_id"
+      )
+      .where({ user_id: userId });
+
+    return results;
+  } catch (error) {
+    throw new ApolloError("Couldn't find user workspaces", "DBError");
+  }
+}
 
 export * as Workspace from "./workspace";
