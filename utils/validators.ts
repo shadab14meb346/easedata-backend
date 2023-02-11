@@ -21,3 +21,10 @@ export const createWorkspaceInputValidator = (
   });
   return schema.validate(input, { abortEarly: false });
 };
+
+export const emailValidator = (email: string): ValidationResult => {
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+  });
+  return schema.validate({ email }, { abortEarly: false });
+};

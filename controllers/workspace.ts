@@ -1,7 +1,10 @@
 import { WorkspaceRoles } from "./../types/workspace";
-import { UserInputError } from "apollo-server-lambda";
+import { ApolloError, UserInputError } from "apollo-server-lambda";
 import { Workspace } from "../model/workspace";
-import { createWorkspaceInputValidator } from "../utils/validators";
+import {
+  createWorkspaceInputValidator,
+  emailValidator,
+} from "../utils/validators";
 import { User } from "../model/user";
 
 const validateCreateWorkspaceInput = (input: Workspace.CreateOpts) => {
@@ -66,8 +69,12 @@ export const getWorkspace = async ({ workspaceId, user }) => {
   //TODO: only member, admin and owner can get workspace
   //TODO: check if the user is member, admin or owner of the workspace
   const workspace = await Workspace.getAWorkspace(workspaceId);
-  if (!workspace)
-    throw new Error("Workspace not found, not a valid workspace id");
+  if (!workspace) {
+    throw new ApolloError(
+      "Workspace not found, not a valid workspace id",
+      "UserInputError"
+    );
+  }
   const workspaceRoleForTheCurrentUser = await getWorkspaceRole({
     userId: user.id,
     workspace,
@@ -80,14 +87,42 @@ export const getWorkspace = async ({ workspaceId, user }) => {
   return workspaceObjWithRole;
 };
 
+const checkAuthorizationForInviteUserToWorkspace = async ({
+  userId,
+  workspaceId,
+}) => {
+  const allowedRolesToPerformThisAction = [
+    WorkspaceRoles.ADMIN,
+    WorkspaceRoles.OWNER,
+  ];
+  const workspace = await Workspace.getAWorkspace(workspaceId);
+  if (!workspace) {
+    throw new ApolloError("Workspace not found", "UserInputError");
+  }
+  const workspaceRoleForTheCurrentUser = await getWorkspaceRole({
+    userId,
+    workspace,
+  });
+  if (
+    !allowedRolesToPerformThisAction.includes(workspaceRoleForTheCurrentUser)
+  ) {
+    throw new ApolloError(
+      "You are not authorized to perform this action",
+      "UnauthorizedError"
+    );
+  }
+};
 export const inviteUserToWorkspace = async ({
   workspaceId,
   email,
   inviterId,
   role,
 }) => {
-  //TODO: only owner or admin can invite user to workspace. Keep this check
-  //TODO: include the joi validation for the input email
+  emailValidator(email);
+  await checkAuthorizationForInviteUserToWorkspace({
+    userId: inviterId,
+    workspaceId,
+  });
   const user = await User.findByEmail(email);
   if (user) {
     //TODO: check if the user is already a member or admin of the workspace
