@@ -34,5 +34,17 @@ export async function getOwnedWorkspacesForAUser(userId: string) {
     throw new ApolloError("Couldn't find workspaces", "DBError");
   }
 }
+export async function getAWorkspace(workspaceId: string) {
+  try {
+    const result = await PostGrace.DB()
+      .select("*")
+      .from(Table.WORKSPACE)
+      .where({ id: workspaceId })
+      .then((rows) => rows[0]);
+    return result;
+  } catch (error) {
+    throw new ApolloError("Couldn't find workspace", "DBError");
+  }
+}
 
 export * as Workspace from "./workspace";

@@ -2,13 +2,10 @@ import * as WorkspaceController from "../../controllers/workspace";
 
 export const WorkspaceResolver = {
   Query: {
-    getWorkspace: async (_parent, _args, ctx, _info) => {
+    getWorkspace: async (_parent, args, ctx, _info) => {
       const user = ctx.assertAuthenticated();
-      const workspace = {
-        id: "123",
-        name: "test",
-      };
-      return workspace;
+      const { workspaceId } = args;
+      return await WorkspaceController.getWorkspace({ user, workspaceId });
     },
     getMyWorkspaces: async (_parent, _args, ctx, _info) => {
       const user = ctx.assertAuthenticated();

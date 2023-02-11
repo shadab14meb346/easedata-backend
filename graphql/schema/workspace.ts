@@ -2,7 +2,7 @@ import { gql } from "apollo-server-lambda";
 
 const workspaceTypeDef = gql`
   type Query {
-    getWorkspace(id: ID!): Workspace!
+    getWorkspace(workspaceId: ID!): Workspace!
     getMyWorkspaces: [Workspace!]!
   }
 
