@@ -2,6 +2,7 @@ import { WorkspaceRoles } from "./../types/workspace";
 import { UserInputError } from "apollo-server-lambda";
 import { Workspace } from "../model/workspace";
 import { createWorkspaceInputValidator } from "../utils/validators";
+import { User } from "../model/user";
 
 const validateCreateWorkspaceInput = (input: Workspace.CreateOpts) => {
   const { error } = createWorkspaceInputValidator(input);
@@ -54,4 +55,32 @@ export const getWorkspace = async ({ workspaceId, user }) => {
     role: getWorkspaceRole({ userId: user.id, workspace }),
   };
   return workspaceObjWithRole;
+};
+
+export const inviteUserToWorkspace = async ({
+  workspaceId,
+  email,
+  inviterId,
+  role,
+}) => {
+  //TODO: only owner or admin can invite user to workspace. Keep this check
+  //TODO: include the joi validation for the input email
+  const user = await User.findByEmail(email);
+  if (user) {
+    //TODO: check if the user is already a member or admin of the workspace
+    //TODO: A user can only be have only one role in a workspace
+    const addedUserToWorkspace = await Workspace.addUserToWorkspace({
+      workspaceId,
+      userId: user.id,
+      role,
+    });
+    const successResponse = {
+      message: "User invited successfully to the workspace",
+      workspaceId: addedUserToWorkspace.workspace_id,
+      createdAt: addedUserToWorkspace.created_at,
+      invitedRole: addedUserToWorkspace.role,
+    };
+    return successResponse;
+  }
+  //TODO: send email to the user with the invite link
 };

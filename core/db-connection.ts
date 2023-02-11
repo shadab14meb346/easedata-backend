@@ -29,6 +29,7 @@ export enum Table {
   DATA_SOURCE = "data_source",
   USERS_TO_DATA_SOURCE = "users_to_data_source",
   WORKSPACE = "workspace",
+  WORKSPACE_TO_USER = "workspace_to_users",
 }
 
 export * as PostGrace from "./db-connection";

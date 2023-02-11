@@ -46,5 +46,21 @@ export async function getAWorkspace(workspaceId: string) {
     throw new ApolloError("Couldn't find workspace", "DBError");
   }
 }
+export async function addUserToWorkspace({ workspaceId, userId, role }) {
+  try {
+    const result = await PostGrace.DB()
+      .insert({
+        workspace_id: workspaceId,
+        user_id: userId,
+        role,
+      })
+      .returning("*")
+      .into(Table.WORKSPACE_TO_USER)
+      .then((rows) => rows[0]);
+    return result;
+  } catch (error) {
+    throw new ApolloError("Couldn't add user to workspace", "DBError");
+  }
+}
 
 export * as Workspace from "./workspace";

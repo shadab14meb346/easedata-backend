@@ -20,5 +20,15 @@ export const WorkspaceResolver = {
         owner_user_id: user.id,
       });
     },
+    inviteUserToWorkspace: async (_parent, _args, ctx, _info) => {
+      const user = ctx.assertAuthenticated();
+      const { workspaceId, email, role } = _args.input;
+      return await WorkspaceController.inviteUserToWorkspace({
+        workspaceId,
+        email,
+        role,
+        inviterId: user.id,
+      });
+    },
   },
 };
