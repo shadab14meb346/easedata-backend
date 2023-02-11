@@ -1,6 +1,5 @@
 import { ApolloError } from "apollo-server-lambda";
 import { PostGrace, Table } from "../core/db-connection";
-import { WorkspaceRoles } from "../types/workspace";
 
 export type CreateOpts = {
   name: string;
@@ -60,6 +59,18 @@ export async function addUserToWorkspace({ workspaceId, userId, role }) {
     return result;
   } catch (error) {
     throw new ApolloError("Couldn't add user to workspace", "DBError");
+  }
+}
+export async function findWorkspaceUser({ workspaceId, userId }) {
+  try {
+    const result = await PostGrace.DB()
+      .select("*")
+      .from(Table.WORKSPACE_TO_USER)
+      .where({ workspace_id: workspaceId, user_id: userId })
+      .then((rows) => rows[0]);
+    return result;
+  } catch (error) {
+    throw new ApolloError("Couldn't find workspace user", "DBError");
   }
 }
 

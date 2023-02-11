@@ -15,9 +15,15 @@ const validateCreateWorkspaceInput = (input: Workspace.CreateOpts) => {
     );
   }
 };
-const getWorkspaceRole = ({ userId, workspace }) => {
+const getWorkspaceRole = async ({ userId, workspace }) => {
   //TODO: handle the case for member and admin
   if (userId === Number(workspace.owner_user_id)) return WorkspaceRoles.OWNER;
+  const workspaceUser = await Workspace.findWorkspaceUser({
+    workspaceId: workspace.id,
+    userId,
+  });
+  if (workspaceUser) return workspaceUser.role;
+  return null;
 };
 export const createWorkspace = async (input: Workspace.CreateOpts) => {
   validateCreateWorkspaceInput(input);
@@ -50,9 +56,14 @@ export const getWorkspace = async ({ workspaceId, user }) => {
   const workspace = await Workspace.getAWorkspace(workspaceId);
   if (!workspace)
     throw new Error("Workspace not found, not a valid workspace id");
+  const workspaceRoleForTheCurrentUser = await getWorkspaceRole({
+    userId: user.id,
+    workspace,
+  });
   const workspaceObjWithRole = {
     ...workspace,
-    role: getWorkspaceRole({ userId: user.id, workspace }),
+    //TODO: handle this in the dataloader way
+    role: workspaceRoleForTheCurrentUser,
   };
   return workspaceObjWithRole;
 };
