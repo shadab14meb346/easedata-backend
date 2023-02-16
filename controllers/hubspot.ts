@@ -14,6 +14,7 @@ const refreshAccessToken = async (refreshToken: string) => {
   );
   hubspotClient.setAccessToken(data.accessToken);
 };
+//TODO:Cleanup remove it not needed anymore
 export const getHubSpotContacts = async (userId) => {
   const dataSource = await getMostRecentDataSource(userId);
   //ideally we can use the same access token un till it's not expired but here currently I am getting a new access token on each request.
@@ -81,4 +82,26 @@ export const getHubSpotCompanies = async ({ refreshToken, fields }) => {
     return primaryPropertiesObject;
   });
   return requiredFormatData;
+};
+
+export const getAllImportantObjectProperties = async (objectName: string) => {
+  const data = await hubspotClient.crm.properties.coreApi.getAll(objectName);
+  //TODO:this can be optimized
+  const importantProperties = data.results
+    .filter((result) => {
+      return result.formField === true;
+    })
+    .sort((a, b) => {
+      if (a.displayOrder === undefined || b.displayOrder === undefined)
+        return 0;
+      return b.displayOrder - a.displayOrder;
+    })
+    .map((result) => {
+      return {
+        name: result.name,
+        label: result.label,
+      };
+    });
+
+  return importantProperties;
 };

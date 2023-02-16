@@ -7,10 +7,13 @@ const DataSourceTypeDef = gql`
   type DataSource {
     id: ID!
     type: String!
-    access_token: String
-    refresh_token: String
+    tables: [Table!]!
     created_at: String!
     updated_at: String!
+  }
+  type Table {
+    name: String!
+    label: String!
   }
 `;
 

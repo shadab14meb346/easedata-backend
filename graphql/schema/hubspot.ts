@@ -1,5 +1,6 @@
 import { gql } from "apollo-server-lambda";
 
+//TODO:getHubSpotContacts remove it not needed anymore
 const hubSpotTypeDef = gql`
   type Query {
     getHubSpotContacts: [Contacts!]
