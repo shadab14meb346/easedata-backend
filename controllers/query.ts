@@ -3,7 +3,7 @@ import { DataQuery } from "../model/query";
 import { Workspace } from "../model/workspace";
 import { UserForJWTGeneration } from "../types/user";
 import { DataSourceType, HUB_SPOT_TABLES } from "../types/data-source";
-import { _getHubSpotContacts } from "./hubspot";
+import { getHubSpotCompanies, _getHubSpotContacts } from "./hubspot";
 
 interface DataQueryInput {
   user: UserForJWTGeneration;
@@ -52,6 +52,13 @@ export const executeQuery = async ({ user, input }) => {
         fields,
       });
       return { data: contacts };
+    }
+    if (table_name === HUB_SPOT_TABLES.COMPANIES) {
+      const companies = await getHubSpotCompanies({
+        refreshToken: dataSource.refresh_token,
+        fields,
+      });
+      return { data: companies };
     }
   }
   return [];

@@ -3,4 +3,5 @@ export enum DataSourceType {
 }
 export enum HUB_SPOT_TABLES {
   CONTACTS = "contacts",
+  COMPANIES = "companies",
 }
