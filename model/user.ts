@@ -55,22 +55,4 @@ export async function findByEmail(email: string) {
   }
 }
 
-export async function getDataSourceList(userId) {
-  try {
-    const results = await PostGrace.DB()
-      .select("ds.id", "ds.type", "ds.access_token", "ds.refresh_token")
-      .from("data_source as ds")
-      .innerJoin(
-        "users_to_data_source",
-        "ds.id",
-        "=",
-        "users_to_data_source.data_source_id"
-      )
-      .where({ user_id: userId });
-    return results;
-  } catch (error) {
-    throw new ApolloError("Couldn't find user", "DBError");
-  }
-}
-
 export * as User from "./user";

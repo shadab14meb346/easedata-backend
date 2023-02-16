@@ -12,10 +12,6 @@ export const UserResolver = {
       const user = ctx.assertAuthenticated();
       return await UserController.getUserById(user.id);
     },
-    getMyDataSourcesList: async (_parent, _args, ctx, _info) => {
-      const user = ctx.assertAuthenticated();
-      return await DataSource.getAllForAUser(user.id);
-    },
   },
   Mutation: {
     register: async (_parent, args) => {
