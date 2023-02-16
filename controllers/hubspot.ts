@@ -37,6 +37,13 @@ export const getHubSpotContacts = async (userId) => {
   });
   return requiredFormatData;
 };
+const makeObjectFromKeys = (keys, values) => {
+  const obj = {};
+  keys.forEach((key) => {
+    obj[key] = values[key];
+  });
+  return obj;
+};
 export const _getHubSpotContacts = async ({ refreshToken, fields }) => {
   //ideally we can use the same access token un till it's not expired but here currently I am getting a new access token on each request.
   await refreshAccessToken(refreshToken);
@@ -48,12 +55,10 @@ export const _getHubSpotContacts = async ({ refreshToken, fields }) => {
     fields
   );
   const requiredFormatData = data.results.map((result) => {
-    const { createdate, firstname, lastname } = result.properties;
-    const primaryPropertiesObject = {
-      created_at: createdate,
-      first_name: firstname,
-      last_name: lastname,
-    };
+    const primaryPropertiesObject = makeObjectFromKeys(
+      fields,
+      result.properties
+    );
     return primaryPropertiesObject;
   });
   return requiredFormatData;
@@ -69,11 +74,10 @@ export const getHubSpotCompanies = async ({ refreshToken, fields }) => {
     fields
   );
   const requiredFormatData = data.results.map((result) => {
-    const { createdate, name } = result.properties;
-    const primaryPropertiesObject = {
-      created_at: createdate,
-      name,
-    };
+    const primaryPropertiesObject = makeObjectFromKeys(
+      fields,
+      result.properties
+    );
     return primaryPropertiesObject;
   });
   return requiredFormatData;
