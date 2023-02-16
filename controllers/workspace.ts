@@ -6,6 +6,7 @@ import {
   emailValidator,
 } from "../utils/validators";
 import { User } from "../model/user";
+import { DataSource } from "../model/data-source";
 
 const validateCreateWorkspaceInput = (input: Workspace.CreateOpts) => {
   const { error } = createWorkspaceInputValidator(input);
@@ -141,4 +142,10 @@ export const inviteUserToWorkspace = async ({
     return successResponse;
   }
   //TODO: send email to the user with the invite link
+};
+
+export const getListOfDataSources = async ({ workspaceId, user }) => {
+  //TODO: the user should be a member or admin or owner of the workspace
+  const results = DataSource.getAllForAWorkspace(workspaceId);
+  return results;
 };

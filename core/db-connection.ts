@@ -27,7 +27,7 @@ export const DB = () => SingletonDB.getInstance();
 export enum Table {
   USERS = "users",
   DATA_SOURCE = "data_source",
-  USERS_TO_DATA_SOURCE = "users_to_data_source",
+  WORKSPACE_TO_DATA_SOURCE = "workspace_to_data_source",
   WORKSPACE = "workspace",
   WORKSPACE_TO_USER = "workspace_to_users",
 }

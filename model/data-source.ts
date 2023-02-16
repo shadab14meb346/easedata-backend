@@ -25,28 +25,28 @@ export async function create(opts: CreateOpts) {
   }
 }
 
-export async function getAllForAUser(userId) {
+export async function getAllForAWorkspace(workspaceId) {
   try {
     const results = await PostGrace.DB()
-      .select("ds.*")
+      .select(
+        "ds.id",
+        "ds.type",
+        "ds.access_token",
+        "ds.refresh_token",
+        "ds.created_at",
+        "ds.updated_at"
+      )
       .from("data_source as ds")
       .innerJoin(
-        "users_to_data_source",
+        "workspace_to_data_source",
         "ds.id",
         "=",
-        "users_to_data_source.data_source_id"
+        "workspace_to_data_source.data_source_id"
       )
-      .where({ user_id: userId });
-    const resultsWithDatesConvertedToString = results.map((result) => {
-      return {
-        ...result,
-        created_at: String(result.created_at),
-        updated_at: String(result.updated_at),
-      };
-    });
-    return resultsWithDatesConvertedToString;
+      .where({ workspace_id: workspaceId });
+    return results;
   } catch (error) {
-    throw new ApolloError("Couldn't find user", "DBError");
+    throw new ApolloError("Couldn't find workspace", "DBError");
   }
 }
 
@@ -55,10 +55,10 @@ export async function getMostRecentDataSource(userId) {
     .select("ds.*")
     .from("data_source as ds")
     .innerJoin(
-      "users_to_data_source",
+      "workspace_to_data_source",
       "ds.id",
       "=",
-      "users_to_data_source.data_source_id"
+      "workspace_to_data_source.data_source_id"
     )
     .where({ user_id: userId })
     .orderBy("created_at", "desc")

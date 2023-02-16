@@ -4,6 +4,7 @@ const workspaceTypeDef = gql`
   type Query {
     getWorkspace(workspaceId: ID!): Workspace!
     getMyWorkspaces: [Workspace!]!
+    getListOfDataSources(workspaceId: ID!): [DataSource!]!
   }
 
   type Mutation {

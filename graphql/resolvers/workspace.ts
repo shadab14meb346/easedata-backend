@@ -11,6 +11,14 @@ export const WorkspaceResolver = {
       const user = ctx.assertAuthenticated();
       return await WorkspaceController.getWorkspacesForAUser(user.id);
     },
+    getListOfDataSources: async (_parent, args, ctx, _info) => {
+      const user = ctx.assertAuthenticated();
+      const { workspaceId } = args;
+      return await WorkspaceController.getListOfDataSources({
+        user,
+        workspaceId,
+      });
+    },
   },
   Mutation: {
     createWorkspace: async (_parent, _args, ctx, _info) => {
