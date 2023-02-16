@@ -1,5 +1,6 @@
 import {
   createQuery,
+  executeQuery,
   getAQuery,
   getDataQueriesOfAWorkspace,
 } from "../../controllers/query";
@@ -21,6 +22,13 @@ export const DataQueryResolver = {
         user,
       });
       return dataQueries;
+    },
+    executeQuery: async (_parent, args, ctx, _info) => {
+      const user = ctx.assertAuthenticated();
+      return await executeQuery({
+        user,
+        input: args.input,
+      });
     },
   },
   Mutation: {
