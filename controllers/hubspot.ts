@@ -1,5 +1,5 @@
 import { Client } from "@hubspot/api-client";
-import { getMostRecentDataSource } from "../model/data-source";
+import { DataSource, getMostRecentDataSource } from "../model/data-source";
 const hubspotClient = new Client({
   numberOfApiCallRetries: 3,
 });
@@ -84,7 +84,17 @@ export const getHubSpotCompanies = async ({ refreshToken, fields }) => {
   return requiredFormatData;
 };
 
-export const getAllImportantObjectProperties = async (objectName: string) => {
+type HubSpotObject = "contacts" | "companies";
+type InputType = {
+  objectName: HubSpotObject;
+  dataSourceId: string;
+};
+export const getAllImportantObjectProperties = async ({
+  objectName,
+  dataSourceId,
+}: InputType) => {
+  const dataSource = await DataSource.get(dataSourceId);
+  await refreshAccessToken(dataSource.refresh_token);
   const data = await hubspotClient.crm.properties.coreApi.getAll(objectName);
   //TODO:this can be optimized
   const importantProperties = data.results
@@ -102,6 +112,5 @@ export const getAllImportantObjectProperties = async (objectName: string) => {
         label: result.label,
       };
     });
-
   return importantProperties;
 };

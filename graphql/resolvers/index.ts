@@ -1,4 +1,5 @@
 import merge from "lodash.merge";
+import { DataSourceResolver } from "./data-source";
 import { HealthCheckResolver } from "./health-check";
 import { HubSpotResolver } from "./hubspot";
 import { DataQueryResolver } from "./query";
@@ -10,7 +11,8 @@ const resolvers = merge(
   HealthCheckResolver,
   HubSpotResolver,
   WorkspaceResolver,
-  DataQueryResolver
+  DataQueryResolver,
+  DataSourceResolver
 );
 
 export default resolvers;
