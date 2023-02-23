@@ -25,6 +25,12 @@ const DataSourceTypeDef = gql`
   type Field {
     name: String!
     label: String!
+    data_type: DataType!
+  }
+  enum DataType {
+    TEXT
+    NUMBER
+    DATE
   }
 `;
 
