@@ -1,9 +1,9 @@
 import { Client } from "@hubspot/api-client";
 import { DataSource, getMostRecentDataSource } from "../model/data-source";
-const hubspotClient = new Client({
+export const hubspotClient = new Client({
   numberOfApiCallRetries: 3,
 });
-const refreshAccessToken = async (refreshToken: string) => {
+export const refreshAccessToken = async (refreshToken: string) => {
   const data = await hubspotClient.oauth.tokensApi.createToken(
     "refresh_token",
     undefined,
@@ -38,7 +38,7 @@ export const getHubSpotContacts = async (userId) => {
   });
   return requiredFormatData;
 };
-const makeObjectFromKeys = (keys, values) => {
+export const makeObjectFromKeys = (keys, values) => {
   const obj = {};
   keys.forEach((key) => {
     obj[key] = values[key];
