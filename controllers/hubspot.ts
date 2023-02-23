@@ -89,6 +89,18 @@ type InputType = {
   objectName: HubSpotObject;
   dataSourceId: string;
 };
+const getFieldDataType = (type) => {
+  switch (type) {
+    case "string":
+      return "TEXT";
+    case "number":
+      return "NUMBER";
+    case "datetime":
+      return "DATE";
+    default:
+      return "TEXT";
+  }
+};
 export const getAllImportantObjectProperties = async ({
   objectName,
   dataSourceId,
@@ -102,14 +114,14 @@ export const getAllImportantObjectProperties = async ({
       return result.formField === true;
     })
     .sort((a, b) => {
-      if (a.displayOrder === undefined || b.displayOrder === undefined)
-        return 0;
+      if (!a?.displayOrder || !b?.displayOrder) return 0;
       return b.displayOrder - a.displayOrder;
     })
     .map((result) => {
       return {
         name: result.name,
         label: result.label,
+        data_type: getFieldDataType(result.type),
       };
     });
   return importantProperties;
