@@ -54,9 +54,39 @@ const queryTypeDef = gql`
     data_source_id: Int!
     table_name: String!
     fields: [String!]!
+    filters: [Filter!]
+    sort: Sort
   }
   type QueryResult {
     data: [DynamicObjectType!]
+  }
+  input Filter {
+    field: String!
+    operator: Operator!
+    value: String!
+  }
+  enum Operator {
+    EQ
+    NEQ
+    LT
+    LTE
+    GT
+    GTE
+    BETWEEN
+    IN
+    NOT_IN
+    HAS_PROPERTY
+    NOT_HAS_PROPERTY
+    CONTAINS_TOKEN
+    NOT_CONTAINS_TOKEN
+  }
+  input Sort {
+    field: String!
+    direction: SortDirection!
+  }
+  enum SortDirection {
+    ASCENDING
+    DESCENDING
   }
   scalar DynamicObjectType
 `;
