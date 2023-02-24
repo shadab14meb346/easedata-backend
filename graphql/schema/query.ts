@@ -72,7 +72,6 @@ const queryTypeDef = gql`
     LTE
     GT
     GTE
-    BETWEEN
     IN
     NOT_IN
     HAS_PROPERTY

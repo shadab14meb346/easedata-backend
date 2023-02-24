@@ -111,7 +111,7 @@ export const getAllImportantObjectProperties = async ({
   //TODO:this can be optimized
   const importantProperties = data.results
     .filter((result) => {
-      return result.formField === true;
+      return result.formField === true || result.name === "createdate";
     })
     .sort((a, b) => {
       if (!a?.displayOrder || !b?.displayOrder) return 0;
