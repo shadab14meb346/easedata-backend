@@ -48,6 +48,27 @@ export const getDataQueriesOfAWorkspace = async ({
   return results;
 };
 
+type GetBetweenEquivalentFiltersInput = {
+  field: string;
+  value: string;
+  highValue: string;
+};
+const getBetweenEquivalentFilters = (
+  input: GetBetweenEquivalentFiltersInput
+) => {
+  const { field, value, highValue } = input;
+  const greaterThenAndEqualFilter = {
+    propertyName: field,
+    value,
+    operator: "GTE",
+  };
+  const lessThenAndEqualFilter = {
+    propertyName: field,
+    value: highValue,
+    operator: "LTE",
+  };
+  return [greaterThenAndEqualFilter, lessThenAndEqualFilter];
+};
 const getFilteredObjects = async ({
   refreshToken,
   fields,
@@ -57,14 +78,24 @@ const getFilteredObjects = async ({
 }) => {
   await refreshAccessToken(refreshToken);
   const filterGroup = {
-    filters: filters.map((filter) => {
-      const filterObj = {
-        propertyName: filter.field,
-        operator: filter.operator,
-        value: filter.value,
-      };
-      return filterObj;
-    }),
+    filters: filters
+      .map((filter) => {
+        if (filter.operator === "BETWEEN") {
+          const betweenFilters = getBetweenEquivalentFilters({
+            field: filter.field,
+            value: filter.value,
+            highValue: filter.high_value,
+          });
+          return betweenFilters;
+        }
+        const filterObj = {
+          propertyName: filter.field,
+          operator: filter.operator,
+          value: filter.value,
+        };
+        return filterObj;
+      })
+      .flat(),
   };
   let stringifySort = "";
   //TODO:fix the sort not working as expected
