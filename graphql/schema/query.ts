@@ -64,6 +64,7 @@ const queryTypeDef = gql`
     field: String!
     operator: Operator!
     value: String!
+    high_value: String
   }
   enum Operator {
     EQ
@@ -78,6 +79,7 @@ const queryTypeDef = gql`
     NOT_HAS_PROPERTY
     CONTAINS_TOKEN
     NOT_CONTAINS_TOKEN
+    BETWEEN
   }
   input Sort {
     field: String!
