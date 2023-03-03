@@ -2,20 +2,20 @@ import { DataSource } from "../model/data-source";
 import { DataQuery } from "../model/query";
 import { Workspace } from "../model/workspace";
 import { UserForJWTGeneration } from "../types/user";
-import { DataSourceType, HUB_SPOT_TABLES } from "../types/data-source";
+import { DataSourceType } from "../types/data-source";
 import {
-  getHubSpotCompanies,
-  getHubSpotDeals,
   hubspotClient,
   makeObjectFromKeys,
   refreshAccessToken,
-  _getHubSpotContacts,
 } from "./hubspot";
+import { ApolloError } from "apollo-server-lambda";
+const DEFAULT_PAGE_SIZE = 100;
 
 interface DataQueryInput {
   user: UserForJWTGeneration;
   input: DataQuery.CreateOpts;
 }
+
 export const createQuery = async (data: DataQueryInput) => {
   const { user, input } = data;
   //TODO:keep the check if workspace exists otherwise throw error
@@ -23,14 +23,11 @@ export const createQuery = async (data: DataQueryInput) => {
   const result = await DataQuery.create(input);
   return result;
 };
-interface GetQueryInput {
-  id: number;
-  user: UserForJWTGeneration;
-}
 interface GenericInput {
   user: UserForJWTGeneration;
   id: string;
 }
+
 export const getAQuery = async ({ id, user }: GenericInput) => {
   //TODO: keep the check if query exists otherwise throw error
   //TODO: keep the check if user is part of the workspace otherwise throw error
@@ -53,6 +50,7 @@ type GetBetweenEquivalentFiltersInput = {
   value: string;
   highValue: string;
 };
+
 const getBetweenEquivalentFilters = (
   input: GetBetweenEquivalentFiltersInput
 ) => {
@@ -69,14 +67,25 @@ const getBetweenEquivalentFilters = (
   };
   return [greaterThenAndEqualFilter, lessThenAndEqualFilter];
 };
+
+const getPageInfo = (paging) => {
+  const pageInfo = {
+    has_next_page: !!paging?.next?.after,
+    has_previous_page: false,
+    start_cursor: "0",
+    end_cursor: paging?.next?.after || "",
+  };
+  return pageInfo;
+};
+
 const getFilteredObjects = async ({
-  refreshToken,
   fields,
   filters,
   sort,
   table_name,
+  limit = DEFAULT_PAGE_SIZE,
+  after,
 }) => {
-  await refreshAccessToken(refreshToken);
   const filterGroup = {
     filters: filters
       .map((filter) => {
@@ -107,8 +116,6 @@ const getFilteredObjects = async ({
   }
   //Here by default sending an empty query.
   const query = "";
-  const limit = 100;
-  const after = 0;
 
   const publicObjectSearchRequest = {
     filterGroups: [filterGroup],
@@ -122,69 +129,76 @@ const getFilteredObjects = async ({
     //@ts-ignore
     publicObjectSearchRequest
   );
-  return response.results.map((result) => {
+  const data = response.results.map((result) => {
     const onlyQueriedFields = makeObjectFromKeys(fields, result.properties);
     return onlyQueriedFields;
   });
+  return {
+    filterObjects: data,
+    paging: response.paging,
+  };
 };
 
-export const executeQuery = async ({ user, input }) => {
+const getHubSpotObjectsData = async (input) => {
+  const {
+    table_name,
+    fields,
+    filters,
+    sort,
+    refresh_token,
+    limit = DEFAULT_PAGE_SIZE,
+    after = "0",
+  } = input;
+  //TODO:Enhancements. Ideally we can use the same access token until it's not expired but here currently I am getting a new access token on each request.
+  await refreshAccessToken(refresh_token);
+  try {
+    if (filters?.length) {
+      const { filterObjects, paging } = await getFilteredObjects({
+        fields,
+        filters,
+        sort,
+        table_name,
+        limit,
+        after,
+      });
+      console.log("filterObjects", filterObjects.length);
+      return { data: filterObjects, page_info: getPageInfo(paging) };
+    }
+    const data = await hubspotClient.crm[table_name].basicApi.getPage(
+      limit,
+      after,
+      fields
+    );
+    const requiredFormatData = data.results.map((result) => {
+      const primaryPropertiesObject = makeObjectFromKeys(
+        fields,
+        result.properties
+      );
+      return primaryPropertiesObject;
+    });
+    return {
+      data: requiredFormatData,
+      page_info: getPageInfo(data.paging),
+    };
+  } catch (e) {
+    console.log(e);
+    throw new ApolloError(
+      "Unexpected error from backend, please retry",
+      "UNEXPECTED_ERROR"
+    );
+  }
+};
+export const executeQuery = async ({ user, input, limit, after }) => {
   //TODO: keep the check if user is part of the workspace otherwise throw error
-  const { data_source_id, table_name, fields, filters, sort } = input;
+  const { data_source_id, ...restInput } = input;
   const dataSource = await DataSource.get(data_source_id);
   if (dataSource.type === DataSourceType.HUB_SPOT) {
-    //TODO:Enhancements. Ideally we can have only one function for all the tables but for now keeping it separate.
-    if (table_name === HUB_SPOT_TABLES.CONTACTS) {
-      if (filters?.length) {
-        const filteredContacts = await getFilteredObjects({
-          refreshToken: dataSource.refresh_token,
-          fields,
-          filters,
-          sort,
-          table_name,
-        });
-        return { data: filteredContacts };
-      }
-      const contacts = await _getHubSpotContacts({
-        refreshToken: dataSource.refresh_token,
-        fields,
-      });
-      return { data: contacts };
-    }
-    if (table_name === HUB_SPOT_TABLES.COMPANIES) {
-      if (filters?.length) {
-        const filterCompanies = await getFilteredObjects({
-          refreshToken: dataSource.refresh_token,
-          fields,
-          filters,
-          sort,
-          table_name,
-        });
-        return { data: filterCompanies };
-      }
-      const companies = await getHubSpotCompanies({
-        refreshToken: dataSource.refresh_token,
-        fields,
-      });
-      return { data: companies };
-    }
-    if (table_name === HUB_SPOT_TABLES.DEALS) {
-      if (filters?.length) {
-        const filterDeals = await getFilteredObjects({
-          refreshToken: dataSource.refresh_token,
-          fields,
-          filters,
-          sort,
-          table_name,
-        });
-        return { data: filterDeals };
-      }
-      const deals = await getHubSpotDeals({
-        refreshToken: dataSource.refresh_token,
-        fields,
-      });
-      return { data: deals };
-    }
+    return await getHubSpotObjectsData({
+      ...restInput,
+      refresh_token: dataSource.refresh_token,
+      limit,
+      after,
+    });
   }
   return [];
 };

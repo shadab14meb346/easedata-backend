@@ -26,7 +26,11 @@ const queryTypeDef = gql`
   type Query {
     getDataQuery(id: ID!): DataQuery!
     listAllDataQueriesOfAWorkspace(workspaceId: ID!): [DataQuery!]
-    executeQuery(input: ExecuteQueryInput!): QueryResult!
+    executeQuery(
+      input: ExecuteQueryInput!
+      limit: Int
+      after: String
+    ): QueryResult!
   }
   type Mutation {
     createDataQuery(input: DataQueryInput!): DataQuery!
@@ -59,6 +63,7 @@ const queryTypeDef = gql`
   }
   type QueryResult {
     data: [DynamicObjectType!]
+    page_info: PageInfo!
   }
   input Filter {
     field: String!
@@ -90,6 +95,12 @@ const queryTypeDef = gql`
     DESCENDING
   }
   scalar DynamicObjectType
+  type PageInfo {
+    has_next_page: Boolean!
+    has_previous_page: Boolean!
+    start_cursor: String
+    end_cursor: String
+  }
 `;
 
 export default queryTypeDef;
