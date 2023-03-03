@@ -1,10 +1,12 @@
 import { Client } from "@hubspot/api-client";
-import { DataSource, getMostRecentDataSource } from "../model/data-source";
+import { DataSource } from "../model/data-source";
 import { HUB_SPOT_TABLES } from "../types/data-source";
-export const hubspotClient = new Client({
-  numberOfApiCallRetries: 3,
-});
-export const refreshAccessToken = async (refreshToken: string) => {
+export const refreshAccessTokenAndReturnHubSpot = async (
+  refreshToken: string
+) => {
+  const hubspotClient = new Client({
+    numberOfApiCallRetries: 3,
+  });
   const data = await hubspotClient.oauth.tokensApi.createToken(
     "refresh_token",
     undefined,
@@ -14,6 +16,7 @@ export const refreshAccessToken = async (refreshToken: string) => {
     refreshToken
   );
   hubspotClient.setAccessToken(data.accessToken);
+  return hubspotClient;
 };
 export const makeObjectFromKeys = (keys, values) => {
   const obj = {};
@@ -44,7 +47,9 @@ export const getAllImportantObjectProperties = async ({
   dataSourceId,
 }: InputType) => {
   const dataSource = await DataSource.get(dataSourceId);
-  await refreshAccessToken(dataSource.refresh_token);
+  const hubspotClient = await refreshAccessTokenAndReturnHubSpot(
+    dataSource.refresh_token
+  );
   const data = await hubspotClient.crm.properties.coreApi.getAll(objectName);
   if (objectName === HUB_SPOT_TABLES.DEALS) {
     //In case of deals I am sending all properties because I am not sure which properties are important.
