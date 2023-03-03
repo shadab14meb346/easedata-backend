@@ -15,30 +15,6 @@ export const refreshAccessToken = async (refreshToken: string) => {
   );
   hubspotClient.setAccessToken(data.accessToken);
 };
-//TODO:Cleanup remove it not needed anymore
-export const getHubSpotContacts = async (userId) => {
-  const dataSource = await getMostRecentDataSource(userId);
-  //ideally we can use the same access token un till it's not expired but here currently I am getting a new access token on each request.
-  await refreshAccessToken(dataSource.refresh_token);
-  const limit = 100;
-  const after = "0";
-  const properties = ["createdate", "firstname", "lastname"];
-  const data = await hubspotClient.crm.contacts.basicApi.getPage(
-    limit,
-    after,
-    properties
-  );
-  const requiredFormatData = data.results.map((result) => {
-    const { createdate, firstname, lastname } = result.properties;
-    const primaryPropertiesObject = {
-      created_at: createdate,
-      first_name: firstname,
-      last_name: lastname,
-    };
-    return primaryPropertiesObject;
-  });
-  return requiredFormatData;
-};
 export const makeObjectFromKeys = (keys, values) => {
   const obj = {};
   keys.forEach((key) => {
