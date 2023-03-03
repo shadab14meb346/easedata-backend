@@ -28,6 +28,8 @@ export const DataQueryResolver = {
       return await executeQuery({
         user,
         input: args.input,
+        limit: args?.limit,
+        after: args?.after,
       });
     },
   },

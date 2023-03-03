@@ -8,11 +8,14 @@ import {
   makeObjectFromKeys,
   refreshAccessToken,
 } from "./hubspot";
+import { ApolloError } from "apollo-server-lambda";
+const DEFAULT_PAGE_SIZE = 100;
 
 interface DataQueryInput {
   user: UserForJWTGeneration;
   input: DataQuery.CreateOpts;
 }
+
 export const createQuery = async (data: DataQueryInput) => {
   const { user, input } = data;
   //TODO:keep the check if workspace exists otherwise throw error
@@ -24,6 +27,7 @@ interface GenericInput {
   user: UserForJWTGeneration;
   id: string;
 }
+
 export const getAQuery = async ({ id, user }: GenericInput) => {
   //TODO: keep the check if query exists otherwise throw error
   //TODO: keep the check if user is part of the workspace otherwise throw error
@@ -46,6 +50,7 @@ type GetBetweenEquivalentFiltersInput = {
   value: string;
   highValue: string;
 };
+
 const getBetweenEquivalentFilters = (
   input: GetBetweenEquivalentFiltersInput
 ) => {
@@ -63,7 +68,24 @@ const getBetweenEquivalentFilters = (
   return [greaterThenAndEqualFilter, lessThenAndEqualFilter];
 };
 
-const getFilteredObjects = async ({ fields, filters, sort, table_name }) => {
+const getPageInfo = (paging) => {
+  const pageInfo = {
+    has_next_page: !!paging?.next?.after,
+    has_previous_page: false,
+    start_cursor: "0",
+    end_cursor: paging?.next?.after || "",
+  };
+  return pageInfo;
+};
+
+const getFilteredObjects = async ({
+  fields,
+  filters,
+  sort,
+  table_name,
+  limit = DEFAULT_PAGE_SIZE,
+  after,
+}) => {
   const filterGroup = {
     filters: filters
       .map((filter) => {
@@ -94,8 +116,6 @@ const getFilteredObjects = async ({ fields, filters, sort, table_name }) => {
   }
   //Here by default sending an empty query.
   const query = "";
-  const limit = 100;
-  const after = 0;
 
   const publicObjectSearchRequest = {
     filterGroups: [filterGroup],
@@ -109,41 +129,66 @@ const getFilteredObjects = async ({ fields, filters, sort, table_name }) => {
     //@ts-ignore
     publicObjectSearchRequest
   );
-  return response.results.map((result) => {
+  const data = response.results.map((result) => {
     const onlyQueriedFields = makeObjectFromKeys(fields, result.properties);
     return onlyQueriedFields;
   });
+  return {
+    filterObjects: data,
+    paging: response.paging,
+  };
 };
+
 const getHubSpotObjectsData = async (input) => {
-  const { table_name, fields, filters, sort, refresh_token } = input;
-  //ideally we can use the same access token un till it's not expired but here currently I am getting a new access token on each request.
+  const {
+    table_name,
+    fields,
+    filters,
+    sort,
+    refresh_token,
+    limit = DEFAULT_PAGE_SIZE,
+    after = "0",
+  } = input;
+  //TODO:Enhancements. Ideally we can use the same access token until it's not expired but here currently I am getting a new access token on each request.
   await refreshAccessToken(refresh_token);
-  if (filters?.length) {
-    const filterObjects = await getFilteredObjects({
-      fields,
-      filters,
-      sort,
-      table_name,
-    });
-    return { data: filterObjects };
-  }
-  const limit = 100;
-  const after = "0";
-  const data = await hubspotClient.crm[table_name].basicApi.getPage(
-    limit,
-    after,
-    fields
-  );
-  const requiredFormatData = data.results.map((result) => {
-    const primaryPropertiesObject = makeObjectFromKeys(
-      fields,
-      result.properties
+  try {
+    if (filters?.length) {
+      const { filterObjects, paging } = await getFilteredObjects({
+        fields,
+        filters,
+        sort,
+        table_name,
+        limit,
+        after,
+      });
+      console.log("filterObjects", filterObjects.length);
+      return { data: filterObjects, page_info: getPageInfo(paging) };
+    }
+    const data = await hubspotClient.crm[table_name].basicApi.getPage(
+      limit,
+      after,
+      fields
     );
-    return primaryPropertiesObject;
-  });
-  return { data: requiredFormatData };
+    const requiredFormatData = data.results.map((result) => {
+      const primaryPropertiesObject = makeObjectFromKeys(
+        fields,
+        result.properties
+      );
+      return primaryPropertiesObject;
+    });
+    return {
+      data: requiredFormatData,
+      page_info: getPageInfo(data.paging),
+    };
+  } catch (e) {
+    console.log(e);
+    throw new ApolloError(
+      "Unexpected error from backend, please retry",
+      "UNEXPECTED_ERROR"
+    );
+  }
 };
-export const executeQuery = async ({ user, input }) => {
+export const executeQuery = async ({ user, input, limit, after }) => {
   //TODO: keep the check if user is part of the workspace otherwise throw error
   const { data_source_id, ...restInput } = input;
   const dataSource = await DataSource.get(data_source_id);
@@ -151,6 +196,8 @@ export const executeQuery = async ({ user, input }) => {
     return await getHubSpotObjectsData({
       ...restInput,
       refresh_token: dataSource.refresh_token,
+      limit,
+      after,
     });
   }
   return [];
