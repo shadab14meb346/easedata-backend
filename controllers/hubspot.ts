@@ -46,63 +46,6 @@ export const makeObjectFromKeys = (keys, values) => {
   });
   return obj;
 };
-export const _getHubSpotContacts = async ({ refreshToken, fields }) => {
-  //ideally we can use the same access token un till it's not expired but here currently I am getting a new access token on each request.
-  await refreshAccessToken(refreshToken);
-  const limit = 100;
-  const after = "0";
-  const data = await hubspotClient.crm.contacts.basicApi.getPage(
-    limit,
-    after,
-    fields
-  );
-  const requiredFormatData = data.results.map((result) => {
-    const primaryPropertiesObject = makeObjectFromKeys(
-      fields,
-      result.properties
-    );
-    return primaryPropertiesObject;
-  });
-  return requiredFormatData;
-};
-export const getHubSpotCompanies = async ({ refreshToken, fields }) => {
-  //ideally we can use the same access token un till it's not expired but here currently I am getting a new access token on each request.
-  await refreshAccessToken(refreshToken);
-  const limit = 100;
-  const after = "0";
-  const data = await hubspotClient.crm.companies.basicApi.getPage(
-    limit,
-    after,
-    fields
-  );
-  const requiredFormatData = data.results.map((result) => {
-    const primaryPropertiesObject = makeObjectFromKeys(
-      fields,
-      result.properties
-    );
-    return primaryPropertiesObject;
-  });
-  return requiredFormatData;
-};
-export const getHubSpotDeals = async ({ refreshToken, fields }) => {
-  //ideally we can use the same access token un till it's not expired but here currently I am getting a new access token on each request.
-  await refreshAccessToken(refreshToken);
-  const limit = 100;
-  const after = "0";
-  const data = await hubspotClient.crm.deals.basicApi.getPage(
-    limit,
-    after,
-    fields
-  );
-  const requiredFormatData = data.results.map((result) => {
-    const primaryPropertiesObject = makeObjectFromKeys(
-      fields,
-      result.properties
-    );
-    return primaryPropertiesObject;
-  });
-  return requiredFormatData;
-};
 
 type InputType = {
   objectName: HUB_SPOT_TABLES;
