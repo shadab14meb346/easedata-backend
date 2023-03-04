@@ -61,5 +61,16 @@ export async function get(id) {
     throw new ApolloError("Couldn't find data source", "DBError");
   }
 }
+export async function deleteDataSource(id) {
+  try {
+    const results = await PostGrace.DB()
+      .delete()
+      .from(Table.DATA_SOURCE)
+      .where({ id });
+    return results[0];
+  } catch (error) {
+    throw new ApolloError("Couldn't delete data source", "DBError");
+  }
+}
 
 export * as DataSource from "./data-source";
