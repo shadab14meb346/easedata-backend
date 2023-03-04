@@ -4,8 +4,9 @@ import { Workspace } from "../model/workspace";
 import { UserForJWTGeneration } from "../types/user";
 import { DataSourceType } from "../types/data-source";
 import {
+  hubspotClient,
   makeObjectFromKeys,
-  refreshAccessTokenAndReturnHubSpot,
+  refreshAccessToken,
 } from "./hubspot";
 import { ApolloError } from "apollo-server-lambda";
 const DEFAULT_PAGE_SIZE = 100;
@@ -84,7 +85,6 @@ const getFilteredObjects = async ({
   table_name,
   limit = DEFAULT_PAGE_SIZE,
   after,
-  hubspotClient,
 }) => {
   const filterGroup = {
     filters: filters
@@ -150,7 +150,7 @@ const getHubSpotObjectsData = async (input) => {
     after = "0",
   } = input;
   //TODO:Enhancements. Ideally we can use the same access token until it's not expired but here currently I am getting a new access token on each request.
-  const hubspotClient = await refreshAccessTokenAndReturnHubSpot(refresh_token);
+  await refreshAccessToken(refresh_token);
   try {
     if (filters?.length) {
       const { filterObjects, paging } = await getFilteredObjects({
@@ -160,7 +160,6 @@ const getHubSpotObjectsData = async (input) => {
         table_name,
         limit,
         after,
-        hubspotClient,
       });
       console.log("filterObjects", filterObjects.length);
       return { data: filterObjects, page_info: getPageInfo(paging) };
