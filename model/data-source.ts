@@ -50,6 +50,21 @@ export async function getAllForAWorkspace(workspaceId) {
   }
 }
 
+export async function getMostRecentDataSource(userId) {
+  const results = await PostGrace.DB()
+    .select("ds.*")
+    .from("data_source as ds")
+    .innerJoin(
+      "workspace_to_data_source",
+      "ds.id",
+      "=",
+      "workspace_to_data_source.data_source_id"
+    )
+    .where({ user_id: userId })
+    .orderBy("created_at", "desc")
+    .limit(1);
+  return results[0];
+}
 export async function get(id) {
   try {
     const results = await PostGrace.DB()
