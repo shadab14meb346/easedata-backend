@@ -1,5 +1,5 @@
 import { Client } from "@hubspot/api-client";
-import { DataSource, getMostRecentDataSource } from "../model/data-source";
+import { DataSource } from "../model/data-source";
 import { HUB_SPOT_TABLES } from "../types/data-source";
 export const hubspotClient = new Client({
   numberOfApiCallRetries: 3,
