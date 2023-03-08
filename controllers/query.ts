@@ -173,7 +173,7 @@ const getHubSpotObjectsData = async (input) => {
       fields
     );
     console.log({
-      data,
+      data: JSON.stringify(data),
     });
     const requiredFormatData = data.results.map((result) => {
       const primaryPropertiesObject = makeObjectFromKeys(
