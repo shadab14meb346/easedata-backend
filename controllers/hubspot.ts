@@ -14,6 +14,7 @@ export const refreshAccessToken = async (refreshToken: string) => {
     refreshToken
   );
   hubspotClient.setAccessToken(data.accessToken);
+  return data.accessToken;
 };
 export const makeObjectFromKeys = (keys, values) => {
   const obj = {};
