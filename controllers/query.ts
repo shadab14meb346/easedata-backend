@@ -192,6 +192,9 @@ export const executeQuery = async ({ user, input, limit, after }) => {
   //TODO: keep the check if user is part of the workspace otherwise throw error
   const { data_source_id, ...restInput } = input;
   const dataSource = await DataSource.get(data_source_id);
+  console.log({
+    dataSource,
+  });
   if (dataSource.type === DataSourceType.HUB_SPOT) {
     return await getHubSpotObjectsData({
       ...restInput,
