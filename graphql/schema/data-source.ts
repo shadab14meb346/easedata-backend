@@ -7,6 +7,16 @@ const DataSourceTypeDef = gql`
   type Query {
     getDataSourceTableFields(input: GetDataSourceTableFieldsInput!): [Field!]!
   }
+  type Mutation {
+    deleteDataSource(input: DeleteDataSourceInput!): DeletedDataSourceResponse!
+  }
+  input DeleteDataSourceInput {
+    id: ID!
+  }
+  type DeletedDataSourceResponse {
+    id: ID!
+    success: Boolean!
+  }
   type DataSource {
     id: ID!
     type: String!

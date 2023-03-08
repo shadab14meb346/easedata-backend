@@ -63,4 +63,17 @@ export const getDataQueriesOfAWorkspace = async (workspaceId: string) => {
   }
 };
 
+export const deleteAllQueryOfADataSource = async (dataSourceId: string) => {
+  try {
+    const results = await PostGrace.DB()
+      .delete()
+      .from("query")
+      .where({ data_source_id: dataSourceId })
+      .then((rows) => rows);
+    return results;
+  } catch (error) {
+    throw new ApolloError("Couldn't delete data query", "DBError");
+  }
+};
+
 export * as DataQuery from "./query";
