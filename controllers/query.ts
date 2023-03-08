@@ -9,6 +9,7 @@ import {
   refreshAccessToken,
 } from "./hubspot";
 import { ApolloError } from "apollo-server-lambda";
+import axios from "axios";
 const DEFAULT_PAGE_SIZE = 100;
 
 interface DataQueryInput {
@@ -139,6 +140,20 @@ const getFilteredObjects = async ({
   };
 };
 
+const getHubSpotDataUsingRestAPICall = async ({ accessToken, properties }) => {
+  const options = {
+    method: "GET",
+    url: "https://api.hubspot.com/crm/v3/objects/contacts",
+    params: { properties },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    data: { count: 10, vidOffset: 0 },
+  };
+  const response = await axios.request(options);
+  return response.data;
+};
 const getHubSpotObjectsData = async (input) => {
   const {
     table_name,
@@ -150,7 +165,8 @@ const getHubSpotObjectsData = async (input) => {
     after = "0",
   } = input;
   //TODO:Enhancements. Ideally we can use the same access token until it's not expired but here currently I am getting a new access token on each request.
-  await refreshAccessToken(refresh_token);
+  const accessToken = await refreshAccessToken(refresh_token);
+
   try {
     if (filters?.length) {
       const { filterObjects, paging } = await getFilteredObjects({
@@ -167,11 +183,15 @@ const getHubSpotObjectsData = async (input) => {
       hubspotClient,
       refresh_token,
     });
-    const data = await hubspotClient.crm[table_name].basicApi.getPage(
-      limit,
-      after,
-      fields
-    );
+    // const data = await hubspotClient.crm[table_name].basicApi.getPage(
+    //   limit,
+    //   after,
+    //   fields
+    // );
+    const data = await getHubSpotDataUsingRestAPICall({
+      accessToken,
+      properties: fields.join(","),
+    });
     console.log({
       data: JSON.stringify(data),
     });
