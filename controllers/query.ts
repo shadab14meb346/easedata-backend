@@ -161,14 +161,20 @@ const getHubSpotObjectsData = async (input) => {
         limit,
         after,
       });
-      console.log("filterObjects", filterObjects.length);
       return { data: filterObjects, page_info: getPageInfo(paging) };
     }
+    console.log({
+      hubspotClient,
+      refresh_token,
+    });
     const data = await hubspotClient.crm[table_name].basicApi.getPage(
       limit,
       after,
       fields
     );
+    console.log({
+      data,
+    });
     const requiredFormatData = data.results.map((result) => {
       const primaryPropertiesObject = makeObjectFromKeys(
         fields,
