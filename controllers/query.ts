@@ -179,10 +179,6 @@ const getHubSpotObjectsData = async (input) => {
       });
       return { data: filterObjects, page_info: getPageInfo(paging) };
     }
-    console.log({
-      hubspotClient,
-      refresh_token,
-    });
     // const data = await hubspotClient.crm[table_name].basicApi.getPage(
     //   limit,
     //   after,
@@ -191,9 +187,6 @@ const getHubSpotObjectsData = async (input) => {
     const data = await getHubSpotDataUsingRestAPICall({
       accessToken,
       properties: fields.join(","),
-    });
-    console.log({
-      data: JSON.stringify(data),
     });
     const requiredFormatData = data.results.map((result) => {
       const primaryPropertiesObject = makeObjectFromKeys(
@@ -218,9 +211,6 @@ export const executeQuery = async ({ user, input, limit, after }) => {
   //TODO: keep the check if user is part of the workspace otherwise throw error
   const { data_source_id, ...restInput } = input;
   const dataSource = await DataSource.get(data_source_id);
-  console.log({
-    dataSource,
-  });
   if (dataSource.type === DataSourceType.HUB_SPOT) {
     return await getHubSpotObjectsData({
       ...restInput,
