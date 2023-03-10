@@ -73,11 +73,20 @@ jobs:
           name: Run tests
           command: yarn ci-test
           environment:
-            load_dotenv: false
-          steps:
-            - run:
-              name: Load environment variables from file
-              command: source ./config/security.env.test
+            NODE_ENV: "test"
+            PROVIDER_STAGE: "test"
+            DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
+            JWT_SECRET: "secret"
+            REGION: "something"
+            httpPort: 4000
+            lambdaPort: 4002
+            REDIRECT_TO_DASHBOARD: " "
+            HUB_SPOT_CLIENT_ID: " "
+            HUB_SPOT_CLIENT_SECRET: " "
+            HUB_SPOT_REDIRECT_URI: " "
+            GA_CLIENT_ID: "dummy"
+            GA_CLIENT_SECRET: "dummy"
+            GA_REDIRECT_URI: "dummy"
 
   deploy:
     docker: # use the docker executor type
