@@ -84,6 +84,10 @@ jobs:
             HUB_SPOT_CLIENT_ID: " "
             HUB_SPOT_CLIENT_SECRET: " "
             HUB_SPOT_REDIRECT_URI: " "
+            GA_CLIENT_ID: "dummy"
+            GA_CLIENT_SECRET: "dummy"
+            GA_REDIRECT_URI: "dummy"
+
   deploy:
     docker: # use the docker executor type
       - image: node:14.19 # the primary container, where your job's commands are run

@@ -4,7 +4,6 @@ import { verifyToken } from "./common/jwt";
 import { useContext } from "./core/context";
 import resolvers from "./graphql/resolvers";
 import typeDefs from "./graphql/schema";
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,

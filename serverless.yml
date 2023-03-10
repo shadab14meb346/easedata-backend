@@ -14,6 +14,9 @@ provider:
     HUB_SPOT_CLIENT_ID: ${env:HUB_SPOT_CLIENT_ID}
     HUB_SPOT_CLIENT_SECRET: ${env:HUB_SPOT_CLIENT_SECRET}
     HUB_SPOT_REDIRECT_URI: ${env:HUB_SPOT_REDIRECT_URI}
+    GA_CLIENT_ID: ${env:GA_CLIENT_ID}
+    GA_CLIENT_SECRET: ${env:GA_CLIENT_SECRET}
+    GA_REDIRECT_URI: ${env:GA_REDIRECT_URI}
 
 plugins:
   - serverless-plugin-typescript
@@ -51,5 +54,12 @@ functions:
     events:
       - http:
           path: oauth-callback
+          method: get
+          cors: true
+  ga-oauthcallback:
+    handler: ./rest-apis-handlers/ga-oauthcallback.handler
+    events:
+      - http:
+          path: ga-oauthcallback
           method: get
           cors: true

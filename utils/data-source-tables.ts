@@ -16,5 +16,8 @@ const hubSpotTables = [
 ];
 const dataSourceTablesMap = new Map([[DataSourceType.HUB_SPOT, hubSpotTables]]);
 export const getDataSourceTables = (dataSourceType: DataSourceType) => {
+  if (dataSourceType === DataSourceType.GOOGLE_ANALYTICS) {
+    return [];
+  }
   return dataSourceTablesMap.get(dataSourceType);
 };
