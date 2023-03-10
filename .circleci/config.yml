@@ -70,18 +70,15 @@ jobs:
           paths:
             - "*"
       - run:
-          name: Load environment variables from file
-          command: |
-            set -o allexport
-            source ./config/security.env.test
-            set +o allexport
-      - run:
           name: Run tests
-          command: |
-            set -o allexport
-            source ./config/security.env.test
-            set +o allexport
-            yarn ci-test
+          command: yarn ci-test
+          environment:
+            load_dotenv: false
+          steps:
+            - run:
+              name: Load environment variables from file
+              command: source ./config/security.env.test
+
   deploy:
     docker: # use the docker executor type
       - image: node:14.19 # the primary container, where your job's commands are run
