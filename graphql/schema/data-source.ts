@@ -6,6 +6,9 @@ https://www.apollographql.com/docs/apollo-server/schema/custom-scalars/
 const DataSourceTypeDef = gql`
   type Query {
     getDataSourceTableFields(input: GetDataSourceTableFieldsInput!): [Field!]!
+    getDataSourceSchema(
+      input: GetDataSourceSchemaInput!
+    ): GetDataSourceSchemaResponse!
   }
   type Mutation {
     deleteDataSource(input: DeleteDataSourceInput!): DeletedDataSourceResponse!
@@ -41,6 +44,13 @@ const DataSourceTypeDef = gql`
     TEXT
     NUMBER
     DATE
+  }
+  input GetDataSourceSchemaInput {
+    data_source_id: ID!
+  }
+  type GetDataSourceSchemaResponse {
+    data_source: DataSource!
+    schema: DynamicObjectType
   }
 `;
 

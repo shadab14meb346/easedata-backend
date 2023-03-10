@@ -12,6 +12,12 @@ export const DataSourceResolver = {
       });
       return fields;
     },
+    getDataSourceSchema: async (_parent, args, ctx, _info) => {
+      ctx.assertAuthenticated();
+      return await DataSourceController.getDataSourceSchema({
+        dataSourceId: args.input.data_source_id,
+      });
+    },
   },
   Mutation: {
     deleteDataSource: async (_parent, args, ctx, _info) => {
