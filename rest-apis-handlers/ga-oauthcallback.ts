@@ -21,7 +21,7 @@ export async function handler(event, context, callback) {
   const dataSourceRow = await DataSource.create({
     access_token: tokens.access_token as string,
     refresh_token: tokens.refresh_token as string,
-    type: DataSourceType.GOOGLE_ANALYTICS,
+    type: DataSourceType.GSHEET,
   });
   console.log({ dataSourceRow });
   await addDataSourceToWorkspace({
