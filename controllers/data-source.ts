@@ -8,11 +8,11 @@ import {
 } from "../model/workspace-to-data-source";
 import { DataSourceType } from "../types/data-source";
 import { getDataSourceTables } from "../utils/data-source-tables";
-import {
-  getGaAccountSummaries,
-  getGaColumns,
-  getGaSegments,
-} from "./google-analytics";
+// import {
+//   getGaAccountSummaries,
+//   getGaColumns,
+//   getGaSegments,
+// } from "./google-analytics";
 
 export const deleteDataSource = async ({ id, user }) => {
   const workspaceToDataSource = await getDataSourceToWorkspace(id);
@@ -41,11 +41,14 @@ const getGASchema = async (dataSource: any) => {
   const schema = {
     objects: [],
   };
-  const [accounts, columns, segments] = await Promise.all([
-    getGaAccountSummaries(dataSource.refresh_token),
-    getGaColumns(dataSource.refresh_token),
-    getGaSegments(dataSource.refresh_token),
-  ]);
+  // const [accounts, columns, segments] = await Promise.all([
+  //   getGaAccountSummaries(dataSource.refresh_token),
+  //   getGaColumns(dataSource.refresh_token),
+  //   getGaSegments(dataSource.refresh_token),
+  // ]);
+  const accounts = [];
+  const columns = [];
+  const segments = [];
   return {
     ...schema,
     accounts,
