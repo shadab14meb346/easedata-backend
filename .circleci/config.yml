@@ -87,6 +87,9 @@ jobs:
             GA_CLIENT_ID: "dummy"
             GA_CLIENT_SECRET: "dummy"
             GA_REDIRECT_URI: "dummy"
+            MS_CLIENT_ID: "dummy"
+            MS_CLIENT_SECRET: "dummy"
+            MS_REDIRECT_URI: "dummy"
 
   deploy:
     docker: # use the docker executor type
