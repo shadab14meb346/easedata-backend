@@ -179,15 +179,11 @@ const getHubSpotObjectsData = async (input) => {
       });
       return { data: filterObjects, page_info: getPageInfo(paging) };
     }
-    // const data = await hubspotClient.crm[table_name].basicApi.getPage(
-    //   limit,
-    //   after,
-    //   fields
-    // );
-    const data = await getHubSpotDataUsingRestAPICall({
-      accessToken,
-      properties: fields.join(","),
-    });
+    const data = await hubspotClient.crm[table_name].basicApi.getPage(
+      limit,
+      after,
+      fields
+    );
     const requiredFormatData = data.results.map((result) => {
       const primaryPropertiesObject = makeObjectFromKeys(
         fields,

@@ -2,7 +2,7 @@ import { Client } from "@hubspot/api-client";
 import { DataSource } from "../model/data-source";
 import { HUB_SPOT_TABLES } from "../types/data-source";
 export const hubspotClient = new Client({
-  numberOfApiCallRetries: 3,
+  numberOfApiCallRetries: 1,
 });
 export const refreshAccessToken = async (refreshToken: string) => {
   const data = await hubspotClient.oauth.tokensApi.createToken(
