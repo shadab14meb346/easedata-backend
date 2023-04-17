@@ -17,6 +17,9 @@ provider:
     GA_CLIENT_ID: ${env:GA_CLIENT_ID}
     GA_CLIENT_SECRET: ${env:GA_CLIENT_SECRET}
     GA_REDIRECT_URI: ${env:GA_REDIRECT_URI}
+    MS_CLIENT_ID: ${env:MS_CLIENT_ID}
+    MS_CLIENT_SECRET: ${env:MS_CLIENT_SECRET}
+    MS_REDIRECT_URI: ${env:MS_REDIRECT_URI}
 
 plugins:
   - serverless-plugin-typescript
@@ -61,5 +64,12 @@ functions:
     events:
       - http:
           path: ga-oauthcallback
+          method: get
+          cors: true
+  ms-oauthcallback:
+    handler: ./rest-apis-handlers/ms-oauthcallback.handler
+    events:
+      - http:
+          path: ms-oauthcallback
           method: get
           cors: true
