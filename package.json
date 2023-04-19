@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "migrate": "knex migrate:latest",
-    "create-migration": "knex migrate:make create_workspace_to_query_schedule_table",
+    "create-migration": "knex migrate:make",
     "rollback-migration": "env-cmd -f ./config/security.env.local knex migrate:rollback",
     "dev": "env-cmd -f ./config/security.env.local yarn migrate && env-cmd -f ./config/security.env.local serverless offline start",
     "deploy": "yarn migrate && serverless deploy",
