@@ -73,3 +73,7 @@ functions:
           path: ms-oauthcallback
           method: get
           cors: true
+  cron-job-each-minute:
+    handler: ./cronjobs/handler.eachMinute
+    events:
+      - schedule: rate(1 minute)

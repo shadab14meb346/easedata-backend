@@ -43,4 +43,19 @@ export async function getScheduledQueryOfAWorkspace(workspaceId: string) {
     throw new ApolloError("Couldn't get query schedule", "DBError");
   }
 }
+
+export async function getAllActiveScheduledQueryForAnInterval(
+  interval: Interval
+) {
+  try {
+    const results = await PostGrace.DB()
+      .select("*")
+      .from("query_schedule")
+      .where({ interval, status: QueryScheduleStatus.ACTIVE });
+    console.log("results", results);
+    return results;
+  } catch (error) {
+    throw new ApolloError("Couldn't get query schedule", "DBError");
+  }
+}
 export * as QuerySchedule from "./query-schedule";
