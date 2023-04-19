@@ -7,6 +7,7 @@ exports.up = function (knex) {
   return knex.schema.createTable("workspace_to_data_source", function (table) {
     table.increments("id").primary().unsigned();
     table.integer("workspace_id").notNullable();
+    //TODO:fix this 255 length is not required
     table.integer("data_source_id", 255).notNullable();
     table.timestamps(true, true); //Add created_at and also updated_at
     table.primary(["workspace_id", "data_source_id"]);

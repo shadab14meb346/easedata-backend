@@ -23,7 +23,7 @@ const getAccessToken = async (refreshToken: string) => {
   });
   return response.data.access_token;
 };
-export const populateGSheet = async () => {
+export const populateGSheet = async (data) => {
   const spreadsheetId = "1K341xHzbQcSvqcRyaI3hUD00SctWZ2818OvAU-oeGD0";
   await getAccessToken(
     "1//0gbgLToW5hojtCgYIARAAGBASNwF-L9Ir4j2b7Qi7eSXeCVwGH_IQT_aaBK2QPoToMbzke7whT8t0pJBM_8R3_movh0o4tP61ldw"
@@ -32,9 +32,7 @@ export const populateGSheet = async () => {
   doc.useOAuth2Client(oauthClient);
   await doc.loadInfo();
   const sheet = doc.sheetsByIndex[0];
-  // await sheet.setHeaderRow(["name", "email"]);
-  const moreRows = await sheet.addRows([
-    { name: "Sergey Brin", email: "sergey@google.com" },
-    { name: "Eric Schmidt", email: "eric@google.com" },
-  ]);
+  const columns = Object.keys(data[0]);
+  await sheet.setHeaderRow(columns);
+  await sheet.addRows(data);
 };
