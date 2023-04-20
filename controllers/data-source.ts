@@ -30,6 +30,7 @@ export const deleteDataSource = async ({ id, user }) => {
       dataSourceId: id,
     }),
     deleteAllQueryOfADataSource(id),
+    //TODO:Delete all of the schedule query for this data source
   ]);
   return {
     id,

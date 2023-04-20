@@ -10,7 +10,8 @@ import {
 } from "./hubspot";
 import { ApolloError } from "apollo-server-lambda";
 import axios from "axios";
-import { populateGSheet } from "./gsheeet";
+import { QuerySchedule } from "../model/query-schedule";
+
 const DEFAULT_PAGE_SIZE = 100;
 
 interface DataQueryInput {
@@ -44,6 +45,19 @@ export const getDataQueriesOfAWorkspace = async ({
   const workspace = await Workspace.getAWorkspace(id);
   //TODO: keep the check if user is part of the workspace otherwise throw error
   const results = await DataQuery.getDataQueriesOfAWorkspace(id);
+  return results;
+};
+
+export const getScheduleQueryOfAWorkspace = async ({
+  id,
+  user,
+}: GenericInput) => {
+  const workspace = await Workspace.getAWorkspace(id);
+  if (!workspace) {
+    throw new ApolloError("Workspace not found");
+  }
+  //TODO: keep the check if user is part of the workspace otherwise throw error
+  const results = await QuerySchedule.getScheduledQueryOfAWorkspace(id);
   return results;
 };
 
@@ -204,7 +218,12 @@ const getHubSpotObjectsData = async (input) => {
     );
   }
 };
-export const executeQuery = async ({ user, input, limit, after }) => {
+export const executeQuery = async ({
+  user,
+  input,
+  limit,
+  after,
+}): Promise<{ data: any[]; page_info: any }> => {
   //TODO: keep the check if user is part of the workspace otherwise throw error
   const { data_source_id, ...restInput } = input;
   const dataSource = await DataSource.get(data_source_id);
@@ -216,14 +235,40 @@ export const executeQuery = async ({ user, input, limit, after }) => {
       after,
     });
   }
-  return [];
+  return {
+    data: [],
+    page_info: {},
+  };
 };
 
-export const scheduleQuery = async (data: DataQueryInput) => {
-  const { user, input } = data;
-  console.log("input", input);
-  await populateGSheet();
-  return {
-    id: "1",
-  };
+const getGSheetIdFromUrl = (url) => {
+  const regex = /\/d\/([^/]+)/;
+  const match = url.match(regex);
+  if (match) {
+    return match[1];
+  }
+  throw new ApolloError("Invalid Google Sheet URL", "INVALID_GSHEET_URL");
+};
+export const createScheduleQuery = async ({
+  query_id,
+  gsheet_url,
+  interval,
+}) => {
+  try {
+    //TODO: keep a check if  the query_id is valid
+    const gSheetId = getGSheetIdFromUrl(gsheet_url);
+    const querySchedule = await QuerySchedule.create({
+      query_id,
+      g_sheet_id: gSheetId,
+      interval,
+    });
+    return {
+      id: querySchedule.id,
+      query_id: querySchedule.query_id,
+      interval: querySchedule.interval,
+      status: querySchedule.status,
+    };
+  } catch (error) {
+    throw new ApolloError("Couldn't create query schedule", "DBError");
+  }
 };

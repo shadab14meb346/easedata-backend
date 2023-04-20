@@ -73,3 +73,12 @@ functions:
           path: ms-oauthcallback
           method: get
           cors: true
+  cron-job-each-minute:
+    handler: ./cronjobs/handler.eachMinute
+    events:
+      - schedule: rate(1 minute)
+  cron-job-each-30-minute:
+    handler: ./cronjobs/handler.each30Minute
+    events:
+      - schedule: rate(30 minutes)
+# add all of the possible interval cron jobs here

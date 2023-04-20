@@ -50,6 +50,24 @@ export async function getAllForAWorkspace(workspaceId) {
   }
 }
 
+export async function getGSheetDataSourceOfAWorkspace(workspaceId) {
+  try {
+    const results = await PostGrace.DB()
+      .select("ds.id", "ds.type", "ds.access_token", "ds.refresh_token")
+      .from("data_source as ds")
+      .innerJoin(
+        "workspace_to_data_source",
+        "ds.id",
+        "=",
+        "workspace_to_data_source.data_source_id"
+      )
+      .where({ workspace_id: workspaceId, type: "GSHEET" });
+    return results[0];
+  } catch (error) {
+    throw new ApolloError("Couldn't find workspace", "DBError");
+  }
+}
+
 export async function get(id) {
   try {
     const results = await PostGrace.DB()

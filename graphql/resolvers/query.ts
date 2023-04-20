@@ -1,9 +1,10 @@
 import {
   createQuery,
+  createScheduleQuery,
   executeQuery,
   getAQuery,
   getDataQueriesOfAWorkspace,
-  scheduleQuery,
+  getScheduleQueryOfAWorkspace,
 } from "../../controllers/query";
 
 export const DataQueryResolver = {
@@ -33,6 +34,14 @@ export const DataQueryResolver = {
         after: args?.after,
       });
     },
+    listAllScheduledQueriesOfAWorkspace: async (_parent, _args, ctx, _info) => {
+      const user = ctx.assertAuthenticated();
+      const scheduledQueries = await getScheduleQueryOfAWorkspace({
+        id: _args.workspaceId,
+        user,
+      });
+      return scheduledQueries;
+    },
   },
   Mutation: {
     createDataQuery: async (_parent, _args, ctx, _info) => {
@@ -43,12 +52,9 @@ export const DataQueryResolver = {
       });
       return createdQuery;
     },
-    scheduleQuery: async (_parent, _args, ctx, _info) => {
+    scheduleQuery: async (_parent, args, ctx, _info) => {
       const user = ctx.assertAuthenticated();
-      const scheduledQuery = await scheduleQuery({
-        user,
-        input: _args.input,
-      });
+      const scheduledQuery = await createScheduleQuery(args.input);
       return scheduledQuery;
     },
   },

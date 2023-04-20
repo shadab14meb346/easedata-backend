@@ -26,6 +26,7 @@ const queryTypeDef = gql`
   type Query {
     getDataQuery(id: ID!): DataQuery!
     listAllDataQueriesOfAWorkspace(workspaceId: ID!): [DataQuery!]
+    listAllScheduledQueriesOfAWorkspace(workspaceId: ID!): [ScheduledQuery!]
     executeQuery(
       input: ExecuteQueryInput!
       limit: Int
@@ -34,7 +35,7 @@ const queryTypeDef = gql`
   }
   type Mutation {
     createDataQuery(input: DataQueryInput!): DataQuery!
-    scheduleQuery(input: ScheduleQueryInput!): ScheduledQueryResponse!
+    scheduleQuery(input: ScheduleQueryInput!): ScheduledQuery!
   }
   input DataQueryInput {
     name: String!
@@ -115,8 +116,11 @@ const queryTypeDef = gql`
     EACH_WEEK
     EACH_MONTH
   }
-  type ScheduledQueryResponse {
+  type ScheduledQuery {
     id: ID!
+    query_id: String!
+    interval: Interval!
+    status: String!
   }
 `;
 
