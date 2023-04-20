@@ -10,7 +10,6 @@ import {
 } from "./hubspot";
 import { ApolloError } from "apollo-server-lambda";
 import axios from "axios";
-import { populateGSheet } from "./gsheeet";
 import { QuerySchedule } from "../model/query-schedule";
 
 const DEFAULT_PAGE_SIZE = 100;
@@ -240,24 +239,6 @@ export const executeQuery = async ({
     data: [],
     page_info: {},
   };
-};
-
-const getLast30daysHubSpotDeals = async () => {
-  const response = await executeQuery({
-    user: {},
-    input: {
-      data_source_id: "55",
-      table_name: "deals",
-      fields: ["dealname", "amount", "dealstage", "closedate"],
-    },
-    limit: 100,
-    after: "0",
-  });
-  return response.data;
-};
-const pushHubSpotDataToGSheet = async () => {
-  const hubSpotData = await getLast30daysHubSpotDeals();
-  await populateGSheet(hubSpotData);
 };
 
 const getGSheetIdFromUrl = (url) => {

@@ -52,7 +52,6 @@ export async function getAllActiveScheduledQueryForAnInterval(
       .select("*")
       .from("query_schedule")
       .where({ interval, status: QueryScheduleStatus.ACTIVE });
-    console.log("results", results);
     return results;
   } catch (error) {
     throw new ApolloError("Couldn't get query schedule", "DBError");
