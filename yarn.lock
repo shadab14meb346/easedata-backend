@@ -689,7 +689,7 @@
     "@hapi/bourne" "1.x.x"
     "@hapi/hoek" "8.x.x"
 
-"@hubspot/api-client@^8.8.1":
+"@hubspot/api-client@^8.9.0":
   version "8.9.0"
   resolved "https://registry.yarnpkg.com/@hubspot/api-client/-/api-client-8.9.0.tgz#ef5c708f5e217996bcbd0b10b0347762b4c31bb2"
   integrity sha512-0BrtxZ2hnVtUxnCyDbYVBpoRXC031moUhVyXfyI2YVa0ETtDBSmFPx2p50gj4dXpTP6vwT1IDdA8jur+iiPXsg==
