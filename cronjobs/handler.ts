@@ -10,6 +10,7 @@ export const eachMinute = async (event, context, callback) => {
         Interval.EACH_MINUTE
       );
     if (!scheduledQuery.length) {
+      console.log(`No scheduled query found`);
       return {
         status: 200,
       };
