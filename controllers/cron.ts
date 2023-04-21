@@ -7,6 +7,7 @@ type RunScheduleQueryArgs = {
   gSheetId: string;
 };
 const getAllPaginatedData = async (query) => {
+  console.log(`Getting all paginated data`);
   let pageInfo;
   const data: any[] = [];
   const requestBody = {
@@ -31,9 +32,12 @@ const getAllPaginatedData = async (query) => {
       data.push(...result.data);
       pageInfo = result.page_info;
     }
+    console.log("Got all Data:: ", data.length);
     return data;
   } catch (e) {
+    console.log(`Error in getting all paginated data:: `, e);
     console.log(e);
+    return [];
   }
 };
 export const runScheduleQuery = async (input: RunScheduleQueryArgs) => {
