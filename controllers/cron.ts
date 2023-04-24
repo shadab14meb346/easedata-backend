@@ -57,13 +57,19 @@ export const runScheduleQuery = async (input: RunScheduleQueryArgs) => {
   // //TODO:some of these async calls can be made parallel for better performance.
   const query = await DataQuery.get(queryId as string);
   console.log(`Query:: `, query);
-  const accessToken = refreshAccessToken(
-    "370c382f-88c0-4142-927d-251a5aea4818"
-  );
-  const data = await getHubSpotDataUsingRestAPICall({
-    accessToken: accessToken,
-    properties: query.fields,
-  });
+  // const accessToken = refreshAccessToken(
+  //   "370c382f-88c0-4142-927d-251a5aea4818"
+  // );
+  // const data = await getHubSpotDataUsingRestAPICall({
+  //   accessToken: accessToken,
+  //   properties: query.fields,
+  // });
+  const data = [
+    {
+      firstName: "Shadab",
+      lastName: "Alam",
+    },
+  ];
   console.log(`Data:: Rest`, data);
   console.log(`Data:: `, data?.length);
   const gsheetDataSource = await DataSource.getGSheetDataSourceOfAWorkspace(
