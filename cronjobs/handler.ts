@@ -25,6 +25,10 @@ export const eachMinute = async (event, context, callback) => {
     await Promise.all(requests);
   } catch (error) {
     console.log(`Error in morning cron job:: `, error);
+  } finally {
+    return {
+      status: 200,
+    };
   }
 };
 
