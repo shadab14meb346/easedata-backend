@@ -5,24 +5,28 @@ import { Interval } from "../types/query-schedule";
 export const eachMinute = async (event, context, callback) => {
   try {
     console.log(`Running each minute cron job`);
-    const scheduledQuery =
-      await QuerySchedule.getAllActiveScheduledQueryForAnInterval(
-        Interval.EACH_MINUTE
-      );
-    if (!scheduledQuery.length) {
-      console.log(`No scheduled query found`);
-      return {
-        status: 200,
-      };
-    }
-    const requests = [];
-    scheduledQuery.forEach((query) => {
-      runScheduleQuery({
-        queryId: query.query_id,
-        gSheetId: query.g_sheet_id,
-      });
+    // const scheduledQuery =
+    //   await QuerySchedule.getAllActiveScheduledQueryForAnInterval(
+    //     Interval.EACH_MINUTE
+    //   );
+    // if (!scheduledQuery.length) {
+    //   console.log(`No scheduled query found`);
+    //   return {
+    //     status: 200,
+    //   };
+    // }
+    // const requests = [];
+    // scheduledQuery.forEach((query) => {
+    //   runScheduleQuery({
+    //     queryId: query.query_id,
+    //     gSheetId: query.g_sheet_id,
+    //   });
+    // });
+    await runScheduleQuery({
+      queryId: "scheduledQuery[0].query_id",
+      gSheetId: "scheduledQuery[0].g_sheet_id",
     });
-    await Promise.all(requests);
+    // await Promise.all(requests);
   } catch (error) {
     console.log(`Error in morning cron job:: `, error);
   }
