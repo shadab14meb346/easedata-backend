@@ -1456,7 +1456,7 @@ const getAllPaginatedData = async (query) => {
   }
 };
 
-const refreshAccessToken = async (refreshToken: string) => {
+export const refreshGoogleAccessToken = async (refreshToken: string) => {
   try {
     const config = {
       headers: {
@@ -1501,7 +1501,7 @@ export const runScheduleQuery = async (input: RunScheduleQueryArgs) => {
   if (!gsheetDataSource) {
     throw new ApolloError(`No GSheet data source found for workspace`);
   }
-  return await refreshAccessToken(gsheetDataSource.refresh_token);
+  return await refreshGoogleAccessToken(gsheetDataSource.refresh_token);
   //   return await populateGSheet({
   //     data,
   //     gsheetId: gSheetId,
