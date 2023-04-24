@@ -15,9 +15,8 @@ export const eachMinute = async (event, context, callback) => {
         status: 200,
       };
     }
-    const requests = [];
-    scheduledQuery.forEach((query) => {
-      runScheduleQuery({
+    const requests = scheduledQuery.map((query) => {
+      return runScheduleQuery({
         queryId: query.query_id,
         gSheetId: query.g_sheet_id,
       });
@@ -25,6 +24,10 @@ export const eachMinute = async (event, context, callback) => {
     await Promise.all(requests);
   } catch (error) {
     console.log(`Error in morning cron job:: `, error);
+  } finally {
+    return {
+      status: 200,
+    };
   }
 };
 
