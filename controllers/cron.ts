@@ -1402,6 +1402,7 @@ const dummyData = [
     dealstage: "closedwon",
   },
 ];
+import { ApolloError } from "apollo-server-lambda";
 import { DataSource } from "../model/data-source";
 import { DataQuery } from "../model/query";
 import { populateGSheet } from "./gsheeet";
@@ -1463,8 +1464,11 @@ export const runScheduleQuery = async (input: RunScheduleQueryArgs) => {
   const gsheetDataSource = await DataSource.getGSheetDataSourceOfAWorkspace(
     query.workspace_id
   );
+  if (!gsheetDataSource) {
+    throw new ApolloError(`No GSheet data source found for workspace`);
+  }
 
-  await populateGSheet({
+  return await populateGSheet({
     data,
     gsheetId: gSheetId,
     gsheetOauthRefreshToken: gsheetDataSource.refresh_token,
