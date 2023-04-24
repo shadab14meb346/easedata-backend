@@ -22,7 +22,7 @@ export const eachMinute = async (event, context, callback) => {
         gSheetId: query.g_sheet_id,
       });
     });
-    return await Promise.all(requests);
+    await Promise.all(requests);
   } catch (error) {
     console.log(`Error in morning cron job:: `, error);
   }
