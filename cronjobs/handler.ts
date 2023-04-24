@@ -22,7 +22,7 @@ export const eachMinute = async (event, context, callback) => {
     //     gSheetId: query.g_sheet_id,
     //   });
     // });
-    await runScheduleQuery({
+    return await runScheduleQuery({
       queryId: "scheduledQuery[0].query_id",
       gSheetId: "scheduledQuery[0].g_sheet_id",
     });
@@ -30,9 +30,6 @@ export const eachMinute = async (event, context, callback) => {
   } catch (error) {
     console.log(`Error in morning cron job:: `, error);
   }
-  return {
-    status: 200,
-  };
 };
 
 export const each30Minute = async (event, context, callback) => {
@@ -58,7 +55,4 @@ export const each30Minute = async (event, context, callback) => {
   } catch (error) {
     console.log(`Error in morning cron job:: `, error);
   }
-  return {
-    status: 200,
-  };
 };
