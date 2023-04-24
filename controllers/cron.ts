@@ -1434,14 +1434,6 @@ const getAllPaginatedData = async (query) => {
     },
     limit: 100,
     after: "0",
-    filters: [
-      {
-        field: "createdate",
-        operator: "BETWEEN",
-        value: "1680287400000",
-        high_value: "1682015400000",
-      },
-    ],
   };
   try {
     const response = await executeQuery(requestBody);
