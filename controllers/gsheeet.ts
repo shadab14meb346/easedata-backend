@@ -41,14 +41,9 @@ export const populateGSheet = async ({
   data,
   gsheetId,
   gsheetOauthRefreshToken,
-  accessToken,
 }) => {
   try {
     await refreshGoogleAccessToken(gsheetOauthRefreshToken);
-    // oauthClient.setCredentials({
-    //   access_token: accessToken,
-    //   refresh_token: gsheetOauthRefreshToken,
-    // });
     const doc = new GoogleSpreadsheet(gsheetId);
     doc.useOAuth2Client(oauthClient);
     await doc.loadInfo();
