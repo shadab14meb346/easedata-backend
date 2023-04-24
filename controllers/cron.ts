@@ -1492,19 +1492,23 @@ export const runScheduleQuery = async (input: RunScheduleQueryArgs) => {
   const { queryId, gSheetId } = input;
   // //TODO:some of these async calls can be made parallel for better performance.
   const query = await DataQuery.get(queryId as string);
-  // console.log(`Query:: `, query);
-  // const data = await getAllPaginatedData(query);
-  // console.log(`Data:: `, data?.length);
-  const gsheetDataSource = await DataSource.getGSheetDataSourceOfAWorkspace(
-    query.workspace_id
-  );
-  if (!gsheetDataSource) {
-    throw new ApolloError(`No GSheet data source found for workspace`);
-  }
-  return await refreshGoogleAccessToken(gsheetDataSource.refresh_token);
-  //   return await populateGSheet({
-  //     data,
-  //     gsheetId: gSheetId,
-  //     gsheetOauthRefreshToken: gsheetDataSource.refresh_token,
-  //   });
+  console.log(`Query:: `, query);
+  const data = await getAllPaginatedData(query);
+  console.log(`Data:: `, data?.length);
+  // const gsheetDataSource = await DataSource.getGSheetDataSourceOfAWorkspace(
+  //   query.workspace_id
+  // );
+  // if (!gsheetDataSource) {
+  //   throw new ApolloError(`No GSheet data source found for workspace`);
+  // }
+  const refreshToken =
+    "1//0goMJ_8TmKld3CgYIARAAGBASNwF-L9IrYu4p_4xE5cYpP9B_v4wx-ivyM71r4QXG39Qb8gEuFJkV-szjkFneDT3vvk_q9KburxU";
+  const accessToken =
+    "ya29.a0Ael9sCMbU9oHc5v-XT0CSNEZHiq8rIq6ZWQRMpsYHTh9-V00p191Dk-m__zDJhE5k7IiznqvpopXcTUj02Ny6-JGO5Qf7s4Sk1Myw4s5R2Vl-2-OWR2dtPDrC0kp7DhBnbG5_45GyYy0hSIjPRglSk8C3ofnaX0aCgYKAf0SARMSFQF4udJhfmWfAvtbKXFc68BBsJLTHw0166";
+  return await populateGSheet({
+    data,
+    gsheetId: gSheetId,
+    gsheetOauthRefreshToken: refreshToken,
+    accessToken,
+  });
 };
