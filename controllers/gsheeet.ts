@@ -1,6 +1,7 @@
 import axios from "axios";
 import { OAuth2Client } from "google-auth-library";
 import { GoogleSpreadsheet } from "google-spreadsheet";
+import querystring from "querystring";
 
 const oauthClient = new OAuth2Client({
   clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
@@ -8,6 +9,12 @@ const oauthClient = new OAuth2Client({
 });
 const refreshAccessToken = async (refreshToken: string) => {
   try {
+    const config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    };
+
     const data = {
       client_id: process.env.GA_CLIENT_ID,
       client_secret: process.env.GA_CLIENT_SECRET,
@@ -16,7 +23,8 @@ const refreshAccessToken = async (refreshToken: string) => {
     };
     const response = await axios.post(
       "https://oauth2.googleapis.com/token",
-      data
+      querystring.stringify(data),
+      config
     );
     oauthClient.setCredentials({
       access_token: response.data.access_token,
