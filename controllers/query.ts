@@ -155,10 +155,13 @@ const getFilteredObjects = async ({
   };
 };
 
-const getHubSpotDataUsingRestAPICall = async ({ accessToken, properties }) => {
+export const getHubSpotDataUsingRestAPICall = async ({
+  accessToken,
+  properties,
+}) => {
   const options = {
     method: "GET",
-    url: "https://api.hubspot.com/crm/v3/objects/contacts",
+    url: "https://api.hubspot.com/crm/v3/objects/deals",
     params: { properties },
     headers: {
       Authorization: `Bearer ${accessToken}`,
