@@ -1,3 +1,4 @@
+import querystring from "querystring";
 const dummyData = [
   {
     dealname: "Apollo Tyres Ltd - New Deal",
@@ -1407,6 +1408,7 @@ import { DataSource } from "../model/data-source";
 import { DataQuery } from "../model/query";
 import { populateGSheet } from "./gsheeet";
 import { executeQuery } from "./query";
+import axios from "axios";
 type RunScheduleQueryArgs = {
   queryId: number | string;
   gSheetId: string;
@@ -1453,24 +1455,56 @@ const getAllPaginatedData = async (query) => {
     return dummyData;
   }
 };
+
+const refreshAccessToken = async (refreshToken: string) => {
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    };
+
+    const data = {
+      client_id: process.env.GA_CLIENT_ID,
+      client_secret: process.env.GA_CLIENT_SECRET,
+      refresh_token: refreshToken,
+      grant_type: "refresh_token",
+    };
+    const response = await axios.post(
+      "https://oauth2.googleapis.com/token",
+      querystring.stringify(data),
+      config
+    );
+    // oauthClient.setCredentials({
+    //   access_token: response.data.access_token,
+    //   refresh_token: refreshToken,
+    // });
+    console.log("Access token refreshed", response.data);
+    return response.data.access_token;
+  } catch (error) {
+    console.log("Error in refreshing access token");
+    console.error(error);
+    throw error;
+  }
+};
 export const runScheduleQuery = async (input: RunScheduleQueryArgs) => {
   console.log(`Running schedule query:: `, input);
   const { queryId, gSheetId } = input;
-  //TODO:some of these async calls can be made parallel for better performance.
+  // //TODO:some of these async calls can be made parallel for better performance.
   const query = await DataQuery.get(queryId as string);
-  console.log(`Query:: `, query);
-  const data = await getAllPaginatedData(query);
-  console.log(`Data:: `, data?.length);
+  // console.log(`Query:: `, query);
+  // const data = await getAllPaginatedData(query);
+  // console.log(`Data:: `, data?.length);
   const gsheetDataSource = await DataSource.getGSheetDataSourceOfAWorkspace(
     query.workspace_id
   );
   if (!gsheetDataSource) {
     throw new ApolloError(`No GSheet data source found for workspace`);
   }
-
-  return await populateGSheet({
-    data,
-    gsheetId: gSheetId,
-    gsheetOauthRefreshToken: gsheetDataSource.refresh_token,
-  });
+  return await refreshAccessToken(gsheetDataSource.refresh_token);
+  //   return await populateGSheet({
+  //     data,
+  //     gsheetId: gSheetId,
+  //     gsheetOauthRefreshToken: gsheetDataSource.refresh_token,
+  //   });
 };
