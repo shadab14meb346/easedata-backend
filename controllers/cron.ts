@@ -19,19 +19,27 @@ const getAllPaginatedData = async (query) => {
     },
     limit: 100,
     after: "0",
+    filters: [
+      {
+        field: "createdate",
+        operator: "BETWEEN",
+        value: "1680287400000",
+        high_value: "1682015400000",
+      },
+    ],
   };
   try {
     const response = await executeQuery(requestBody);
     pageInfo = response.page_info;
     data.push(...response.data);
-    while (pageInfo?.has_next_page) {
-      const result = await executeQuery({
-        ...requestBody,
-        after: pageInfo.end_cursor,
-      });
-      data.push(...result.data);
-      pageInfo = result.page_info;
-    }
+    // while (pageInfo?.has_next_page) {
+    const result = await executeQuery({
+      ...requestBody,
+      after: pageInfo.end_cursor,
+    });
+    data.push(...result.data);
+    pageInfo = result.page_info;
+    // }
     console.log("Got all Data:: ", data.length);
     return data;
   } catch (e) {
