@@ -38,4 +38,9 @@ export const populateGSheet = async ({
   const columns = Object.keys(data[0]);
   await sheet.setHeaderRow(columns);
   await sheet.addRows(data);
+  console.log(`Data successfully pushed to Google Sheet`);
+  return {
+    status: 200,
+    message: "Data successfully pushed to Google Sheet",
+  };
 };
