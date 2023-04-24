@@ -7,7 +7,7 @@ const oauthClient = new OAuth2Client({
   clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
   clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
 });
-const refreshAccessToken = async (refreshToken: string) => {
+const refreshGoogleAccessToken = async (refreshToken: string) => {
   try {
     const config = {
       headers: {
@@ -44,11 +44,11 @@ export const populateGSheet = async ({
   accessToken,
 }) => {
   try {
-    // await refreshAccessToken(gsheetOauthRefreshToken);
-    oauthClient.setCredentials({
-      access_token: accessToken,
-      refresh_token: gsheetOauthRefreshToken,
-    });
+    await refreshGoogleAccessToken(gsheetOauthRefreshToken);
+    // oauthClient.setCredentials({
+    //   access_token: accessToken,
+    //   refresh_token: gsheetOauthRefreshToken,
+    // });
     const doc = new GoogleSpreadsheet(gsheetId);
     doc.useOAuth2Client(oauthClient);
     await doc.loadInfo();
