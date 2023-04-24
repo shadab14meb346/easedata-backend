@@ -15,9 +15,8 @@ export const eachMinute = async (event, context, callback) => {
         status: 200,
       };
     }
-    const requests = [];
-    scheduledQuery.forEach((query) => {
-      runScheduleQuery({
+    const requests = scheduledQuery.map((query) => {
+      return runScheduleQuery({
         queryId: query.query_id,
         gSheetId: query.g_sheet_id,
       });
