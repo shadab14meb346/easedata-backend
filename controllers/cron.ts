@@ -2,7 +2,8 @@ import { ApolloError } from "apollo-server-lambda";
 import { DataSource } from "../model/data-source";
 import { DataQuery } from "../model/query";
 import { populateGSheet } from "./gsheeet";
-import { executeQuery } from "./query";
+import { executeQuery, getHubSpotDataUsingRestAPICall } from "./query";
+import { refreshAccessToken } from "./hubspot";
 type RunScheduleQueryArgs = {
   queryId: number | string;
   gSheetId: string;
@@ -56,7 +57,14 @@ export const runScheduleQuery = async (input: RunScheduleQueryArgs) => {
   // //TODO:some of these async calls can be made parallel for better performance.
   const query = await DataQuery.get(queryId as string);
   console.log(`Query:: `, query);
-  const data = await getAllPaginatedData(query);
+  const accessToken = refreshAccessToken(
+    "370c382f-88c0-4142-927d-251a5aea4818"
+  );
+  const data = await getHubSpotDataUsingRestAPICall({
+    accessToken: accessToken,
+    properties: query.fields,
+  });
+  console.log(`Data:: Rest`, data);
   console.log(`Data:: `, data?.length);
   const gsheetDataSource = await DataSource.getGSheetDataSourceOfAWorkspace(
     query.workspace_id
